@@ -70,7 +70,7 @@ export const Kinetic3DName: React.FC = () => {
   return (
     <div
       ref={containerRef}
-      className="absolute inset-0 z-20 pointer-events-none flex flex-col items-center justify-center select-none pt-24 sm:pt-32 md:pt-40 translate-y-6 sm:translate-y-8 md:translate-y-10"
+      className="absolute inset-0 z-20 pointer-events-none flex flex-col items-center justify-center select-none pt-32 sm:pt-40 md:pt-48 translate-y-12 sm:translate-y-16 md:translate-y-20"
       style={{
         perspective: '1400px',
         perspectiveOrigin: '50% 50%',
