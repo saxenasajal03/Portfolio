@@ -2,5 +2,7 @@
   "name": "Sajal Saxena — Full-Stack & AI Systems Portfolio",
   "description": "Interactive 3D portfolio of Sajal Saxena — Full-Stack Engineer, BDA at Urban Company, and Generative AI Specialist.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }
