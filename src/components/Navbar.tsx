@@ -96,7 +96,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDossier }) => {
             </a>
 
             <a
-              href="/assets/resource/SAJAL_SAXENA_RESUME_3b56c39e.pdf"
+              href="Portfolio/assets/resource/SAJAL_SAXENA_RESUME_3b56c39e.pdf"
               target="_blank"
               rel="noopener noreferrer"
               download="Sajal_Saxena_Resume.pdf"
@@ -175,7 +175,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDossier }) => {
               <span>Connect on LinkedIn</span>
             </a>
             <a
-              href="/assets/resource/SAJAL_SAXENA_RESUME_3b56c39e.pdf"
+              href="/Portfolio/assets/resource/SAJAL_SAXENA_RESUME_3b56c39e.pdf"
               target="_blank"
               rel="noopener noreferrer"
               download="Sajal_Saxena_Resume.pdf"
