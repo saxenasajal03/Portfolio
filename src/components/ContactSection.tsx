@@ -205,7 +205,7 @@ export const ContactSection: React.FC = () => {
                 {/* Verified Resume Download */}
                 <div className="pt-4 border-t border-white/10">
                   <a
-                    href="/assets/resource/SAJAL_SAXENA_RESUME_3b56c39e.pdf"
+                    href={`${import.meta.env.BASE_URL}assets/resource/SAJAL_SAXENA_RESUME_3b56c39e.pdf`}
                     target="_blank"
                     rel="noopener noreferrer"
                     download="Sajal_Saxena_Resume.pdf"
