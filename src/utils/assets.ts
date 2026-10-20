@@ -40,5 +40,5 @@ export function getAssetUrl(relativePath: string): string {
 }
 
 // Canonical asset constants
-export const RESUME_PDF_URL = getAssetUrl('assets/resource/SAJAL_SAXENA_RESUME_3b56c39e.pdf');
-export const PROFILE_IMAGE_URL = getAssetUrl('assets/resource/image_18e25f87.png');
+export const RESUME_PDF_URL = getAssetUrl('Portfolio/assets/resource/SAJAL_SAXENA_RESUME_3b56c39e.pdf');
+export const PROFILE_IMAGE_URL = getAssetUrl('{Portfolio/assets/resource/image_18e25f87.png');
