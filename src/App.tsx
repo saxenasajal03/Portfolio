@@ -65,7 +65,7 @@ export default function App() {
   // Process user photo: remove studio neutral grey background & prepare transparent texture
   useEffect(() => {
     let isCancelled = false;
-    const photoUrl = '/assets/resource/image_18e25f87.png';
+    const photoUrl = 'Portfolio/assets/resource/image_18e25f87.png';
 
     removeStudioBackground(photoUrl, { tolerance: 38, feather: 2 })
       .then((res) => {
