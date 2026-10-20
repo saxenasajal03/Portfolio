@@ -1,4 +1,4 @@
-# Sajal Saxena — Interactive 3D Portfolio & Systems Dossier
+# Sajal Saxena — Interactive Portfolio 
 
 > **Full-Stack Software Engineer · Business Development Associate at Urban Company · Certified Generative AI Professional**
 
@@ -114,7 +114,7 @@ This repository is already pre-configured for **GitHub Pages** with two easy opt
 1. Push this repository to GitHub:
    ```bash
    git add .
-   git commit -m "feat: complete modern 3D portfolio for Sajal Saxena"
+   git commit -m "feat: complete modern portfolio"
    git branch -M main
    git remote add origin https://github.com/<your-username>/<your-repo-name>.git
    git push -u origin main
@@ -150,7 +150,6 @@ Then under **Settings** → **Pages**, select **Deploy from a branch** and choos
 - **Engineer**: Sajal Saxena
 - **Role**: Business Development Associate (Central SBC Quality) @ Urban Company
 - **Email**: [sajalsaxenagola@gmail.com](mailto:sajalsaxenagola@gmail.com)
-- **Phone / WhatsApp**: [+91 88408 10386](tel:+918840810386)
 - **LinkedIn**: [linkedin.com/in/sajal-saxena-cse](https://www.linkedin.com/in/sajal-saxena-cse/)
 - **Location**: Ghitorni, New Delhi / Gola Gokarannath, Uttar Pradesh (PIN: 262802)
 
