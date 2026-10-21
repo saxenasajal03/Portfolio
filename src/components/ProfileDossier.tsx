@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, ExternalLink, Download, Mail, Phone, MapPin, Award, Briefcase, Code, GraduationCap, Cpu, CheckCircle2, Linkedin, Github } from 'lucide-react';
 import { soundEngine } from '../utils/audio';
+import { getAssetUrl } from '../utils/assets';
 
 interface ProfileDossierProps {
   isOpen: boolean;
@@ -38,7 +39,7 @@ export const ProfileDossier: React.FC<ProfileDossierProps> = ({ isOpen, onClose,
 
           <div className="flex items-center gap-2">
             <a
-              href="/Portfolio/assets/resource/SAJAL_SAXENA_RESUME_3b56c39e.pdf"
+              href={getAssetUrl('assets/resource/SAJAL_SAXENA_RESUME_3b56c39e.pdf')}
               target="_blank"
               rel="noopener noreferrer"
               download="Sajal_Saxena_Resume.pdf"
@@ -93,7 +94,7 @@ export const ProfileDossier: React.FC<ProfileDossierProps> = ({ isOpen, onClose,
               <div className="space-y-4">
                 <div className="relative aspect-[3/4] bg-neutral-900 border border-white/10 rounded-lg overflow-hidden flex items-center justify-center p-2 group">
                   <img
-                    src="/Portfolio/assets/resource/image_18e25f87.png"
+                    src={cutoutDataUrl || getAssetUrl('assets/resource/image_18e25f87.png')}
                     alt="Sajal Saxena"
                     className="max-h-full object-contain filter drop-shadow-[0_10px_20px_rgba(255,154,60,0.15)] group-hover:scale-105 transition-transform duration-500"
                   />

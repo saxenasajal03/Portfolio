@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Download, Mail, Menu as MenuIcon, X, Sparkles, User, Briefcase, Code2, GraduationCap, Phone, Linkedin } from 'lucide-react';
 import { soundEngine } from '../utils/audio';
+import { getAssetUrl } from '../utils/assets';
 
 interface NavbarProps {
   onOpenDossier: () => void;
@@ -96,7 +97,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDossier }) => {
             </a>
 
             <a
-              href="Portfolio/assets/resource/SAJAL_SAXENA_RESUME_3b56c39e.pdf"
+              href={getAssetUrl('assets/resource/SAJAL_SAXENA_RESUME_3b56c39e.pdf')}
               target="_blank"
               rel="noopener noreferrer"
               download="Sajal_Saxena_Resume.pdf"
@@ -175,7 +176,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDossier }) => {
               <span>Connect on LinkedIn</span>
             </a>
             <a
-              href="/Portfolio/assets/resource/SAJAL_SAXENA_RESUME_3b56c39e.pdf"
+              href={getAssetUrl('assets/resource/SAJAL_SAXENA_RESUME_3b56c39e.pdf')}
               target="_blank"
               rel="noopener noreferrer"
               download="Sajal_Saxena_Resume.pdf"

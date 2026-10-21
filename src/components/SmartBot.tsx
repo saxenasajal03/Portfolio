@@ -20,6 +20,7 @@ import {
   Clock,
 } from 'lucide-react';
 import { soundEngine } from '../utils/audio';
+import { getAssetUrl } from '../utils/assets';
 
 interface ActionButton {
   label: string;
@@ -591,7 +592,7 @@ export const SmartBot: React.FC = () => {
   const handleActionClick = (action: ActionButton) => {
     soundEngine.playTick();
     if (action.icon === 'download') {
-      window.open('/assets/resource/SAJAL_SAXENA_RESUME_3b56c39e.pdf', '_blank');
+      window.open(getAssetUrl('assets/resource/SAJAL_SAXENA_RESUME_3b56c39e.pdf'), '_blank');
       return;
     }
     if (action.icon === 'linkedin') {

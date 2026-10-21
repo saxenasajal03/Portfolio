@@ -1,9 +1,6 @@
 /**
- * Universal asset URL resolver.
- * Handles:
- * - Localhost dev server (http://localhost:3000/)
- * - GitHub Pages subpath (https://<username>.github.io/<repo>/)
- * - AI Studio preview / custom domain
+ * Universal asset URL resolver for GitHub Pages, local dev, and custom domains.
+ * Solves the GitHub Pages subpath issue (e.g. /Portfolio/ vs /).
  */
 export function getAssetUrl(relativePath: string): string {
   if (!relativePath) return '';
@@ -21,9 +18,10 @@ export function getAssetUrl(relativePath: string): string {
 
   if (typeof window !== 'undefined') {
     try {
-      // Determine canonical base pathname ensuring trailing slash on folders
       let pathname = window.location.pathname;
-      if (!pathname.endsWith('/') && !pathname.includes('.')) {
+      if (pathname.endsWith('.html')) {
+        pathname = pathname.substring(0, pathname.lastIndexOf('/') + 1);
+      } else if (!pathname.endsWith('/')) {
         pathname += '/';
       }
       const origin = window.location.origin;
@@ -39,6 +37,5 @@ export function getAssetUrl(relativePath: string): string {
   return `${prefix}${clean}`;
 }
 
-// Canonical asset constants
-export const RESUME_PDF_URL = getAssetUrl('Portfolio/assets/resource/SAJAL_SAXENA_RESUME_3b56c39e.pdf');
-export const PROFILE_IMAGE_URL = getAssetUrl('{Portfolio/assets/resource/image_18e25f87.png');
+export const RESUME_PDF_PATH = 'assets/resource/SAJAL_SAXENA_RESUME_3b56c39e.pdf';
+export const PROFILE_IMAGE_PATH = 'assets/resource/image_18e25f87.png';

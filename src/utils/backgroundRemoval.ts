@@ -21,7 +21,9 @@ export async function removeStudioBackground(
 
   return new Promise((resolve, reject) => {
     const img = new Image();
-    img.crossOrigin = 'anonymous';
+    if (typeof window !== 'undefined' && imageSrc.startsWith('http') && !imageSrc.startsWith(window.location.origin)) {
+      img.crossOrigin = 'anonymous';
+    }
     img.onload = () => {
       try {
         const width = img.naturalWidth || img.width;

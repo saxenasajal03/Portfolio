@@ -16,6 +16,7 @@ import { ContactSection } from './components/ContactSection';
 import { SmartBot } from './components/SmartBot';
 import { Kinetic3DName } from './components/Kinetic3DName';
 import { soundEngine } from './utils/audio';
+import { getAssetUrl } from './utils/assets';
 import { ArrowDown, ChevronRight } from 'lucide-react';
 
 export default function App() {
@@ -65,7 +66,28 @@ export default function App() {
   // Process user photo: remove studio neutral grey background & prepare transparent texture
   useEffect(() => {
     let isCancelled = false;
-    const photoUrl = 'Portfolio/assets/resource/image_18e25f87.png';
+    const photoUrl = getAssetUrl('assets/resource/image_18e25f87.png');
+
+    const fallbackDirect = () => {
+      const img = new Image();
+      img.onload = () => {
+        if (isCancelled) return;
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth || img.width;
+        canvas.height = img.naturalHeight || img.height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0);
+          setProcessedImage({
+            canvas,
+            dataUrl: canvas.toDataURL(),
+            width: canvas.width,
+            height: canvas.height,
+          });
+        }
+      };
+      img.src = photoUrl;
+    };
 
     removeStudioBackground(photoUrl, { tolerance: 38, feather: 2 })
       .then((res) => {
@@ -75,6 +97,7 @@ export default function App() {
       })
       .catch((err) => {
         console.warn('Background removal fallback to direct image:', err);
+        fallbackDirect();
       });
 
     return () => {

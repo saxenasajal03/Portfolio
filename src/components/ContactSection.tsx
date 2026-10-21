@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Download, Send, CheckCircle2, Copy, ArrowUp, ExternalLink, Sparkles, MessageSquare, Linkedin } from 'lucide-react';
 import { soundEngine } from '../utils/audio';
 import { MotionCard3D } from './MotionCard3D';
+import { getAssetUrl } from '../utils/assets';
 
 export const ContactSection: React.FC = () => {
   const [copied, setCopied] = useState(false);
@@ -202,10 +203,10 @@ export const ContactSection: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Verified Resume Download */}
+                {/* Official Resume Download */}
                 <div className="pt-4 border-t border-white/10">
                   <a
-                    href="/Portfolio/assets/resource/SAJAL_SAXENA_RESUME_3b56c39e.pdf"
+                    href={getAssetUrl('assets/resource/SAJAL_SAXENA_RESUME_3b56c39e.pdf')}
                     target="_blank"
                     rel="noopener noreferrer"
                     download="Sajal_Saxena_Resume.pdf"
@@ -213,7 +214,7 @@ export const ContactSection: React.FC = () => {
                     className="flex items-center justify-center gap-2 w-full py-3.5 px-4 rounded-lg bg-white/10 hover:bg-white/20 border border-white/15 text-white font-bold text-xs font-mono transition-all shadow-md active:scale-98"
                   >
                     <Download size={15} className="text-[#ff9a3c]" />
-                    <span>Download Verified Resume (PDF)</span>
+                    <span>Download Resume (PDF)</span>
                   </a>
                 </div>
               </div>
