@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Download, Mail, Menu as MenuIcon, X, Sparkles, User, Briefcase, Code2, GraduationCap, Phone, Linkedin, Navigation } from 'lucide-react';
+import { Download, Mail, Menu as MenuIcon, X, Sparkles, User, Briefcase, Code2, GraduationCap, Phone, Linkedin, Navigation, Layers } from 'lucide-react';
 import { soundEngine } from '../utils/audio';
 import { getAssetUrl } from '../utils/assets';
 
