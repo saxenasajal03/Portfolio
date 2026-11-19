@@ -21,6 +21,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDossier }) => {
 
   const navLinks = [
     { label: 'Hero 3D', href: '#hero', icon: Sparkles },
+    { label: '3D Cyber City', href: '#metaverse-city', icon: Layers },
     { label: 'Projects', href: '#projects', icon: Code2 },
     { label: 'Experience', href: '#experience', icon: Briefcase },
     { label: 'Skills & AI', href: '#skills', icon: User },

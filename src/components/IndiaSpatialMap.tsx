@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Compass, Navigation, Radio, MapPin, Sparkles, Shield, Award, Building2, GraduationCap, Home } from 'lucide-react';
+import { Compass, Navigation, Radio, MapPin, Sparkles, Shield, Award, Building2, GraduationCap, Home, Layers } from 'lucide-react';
 import { soundEngine } from '../utils/audio';
 import { MotionCard3D } from './MotionCard3D';
+import { getAssetUrl } from '../utils/assets';
 
 interface GeoNode {
   id: string;
@@ -9,6 +10,10 @@ interface GeoNode {
   region: string;
   role: string;
   coords: string;
+  // Percentage on 3D isometric map
+  isoX: number;
+  isoY: number;
+  // Percentage on 2D vector map
   xPercent: number;
   yPercent: number;
   icon: typeof Building2;
@@ -25,6 +30,8 @@ const NODES: GeoNode[] = [
     region: 'National Capital Region',
     role: 'Central SBC Quality Team · Urban Company',
     coords: '28.4986° N, 77.1558° E',
+    isoX: 35.5,
+    isoY: 34.0,
     xPercent: 37.5,
     yPercent: 34.2,
     icon: Building2,
@@ -44,6 +51,8 @@ const NODES: GeoNode[] = [
     region: 'Uttarakhand State',
     role: 'B.Tech in Computer Science & Engineering',
     coords: '30.3165° N, 78.0322° E',
+    isoX: 38.0,
+    isoY: 28.5,
     xPercent: 39.2,
     yPercent: 29.8,
     icon: GraduationCap,
@@ -63,6 +72,8 @@ const NODES: GeoNode[] = [
     region: 'Lakhimpur Kheri, Uttar Pradesh',
     role: 'Origin Foundry · PIN: 262802',
     coords: '28.0824° N, 80.4706° E',
+    isoX: 44.5,
+    isoY: 36.5,
     xPercent: 44.8,
     yPercent: 35.8,
     icon: Home,
@@ -80,10 +91,16 @@ const NODES: GeoNode[] = [
 
 export const IndiaSpatialMap: React.FC = () => {
   const [activeNode, setActiveNode] = useState<GeoNode>(NODES[0]);
+  const [mapMode, setMapMode] = useState<'isometric' | 'vector'>('isometric');
 
   const selectNode = (node: GeoNode) => {
     soundEngine.playTick();
     setActiveNode(node);
+  };
+
+  const toggleMapMode = (mode: 'isometric' | 'vector') => {
+    soundEngine.playTick();
+    setMapMode(mode);
   };
 
   return (
@@ -100,21 +117,43 @@ export const IndiaSpatialMap: React.FC = () => {
               <span>04 // Geographic Telemetry</span>
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight flex items-center gap-3">
-              SOVEREIGN INDIA METAVERSE MAP
+              SOVEREIGN INDIA 3D MAP
             </h2>
           </div>
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-neutral-300">
-            <Radio className="w-3.5 h-3.5 text-[#10b981] animate-pulse" />
-            <span>SURVEY OF INDIA CARTOGRAPHIC ALIGNMENT</span>
+
+          {/* Toggle Map Mode Buttons */}
+          <div className="flex items-center gap-2 bg-[#140e09] border border-white/15 p-1 rounded-xl text-xs font-mono">
+            <button
+              onClick={() => toggleMapMode('isometric')}
+              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all ${
+                mapMode === 'isometric'
+                  ? 'bg-[#ff9a3c] text-[#120e0a] font-bold shadow-md'
+                  : 'text-neutral-400 hover:text-white'
+              }`}
+            >
+              <Layers size={13} />
+              <span>3D ISOMETRIC RELIEF</span>
+            </button>
+            <button
+              onClick={() => toggleMapMode('vector')}
+              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all ${
+                mapMode === 'vector'
+                  ? 'bg-[#06b6d4] text-[#120e0a] font-bold shadow-md'
+                  : 'text-neutral-400 hover:text-white'
+              }`}
+            >
+              <Compass size={13} />
+              <span>CYBER VECTOR</span>
+            </button>
           </div>
         </div>
 
-        {/* Main Grid: Real India Vector Map + Interactive Telemetry HUD */}
+        {/* Main Grid: Real India Vector/Isometric Map + Interactive Telemetry HUD */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           
-          {/* Real Sovereign India Vector Map */}
+          {/* Real Sovereign India Vector/Isometric Map */}
           <div className="lg:col-span-7 flex justify-center items-center">
-            <MotionCard3D maxTilt={6} depth={15} className="w-full max-w-[500px]">
+            <MotionCard3D maxTilt={6} depth={15} className="w-full max-w-[520px]">
               <div className="relative p-6 sm:p-8 rounded-2xl bg-[#120c08]/90 border border-white/15 backdrop-blur-xl shadow-[0_0_50px_rgba(255,154,60,0.1)] overflow-hidden">
                 {/* HUD Corner Accents */}
                 <div className="absolute top-2 left-2 w-3 h-3 border-t-2 border-l-2 border-[#ff9a3c]" />
@@ -123,109 +162,183 @@ export const IndiaSpatialMap: React.FC = () => {
                 <div className="absolute bottom-2 right-2 w-3 h-3 border-b-2 border-r-2 border-[#ff9a3c]" />
 
                 {/* Coordinates Watermark */}
-                <div className="flex items-center justify-between text-[10px] font-mono text-neutral-500 mb-4 pb-2 border-b border-white/5">
-                  <span>LAT: 08°04&apos;N TO 37°06&apos;N</span>
-                  <span>LONG: 68°07&apos;E TO 97°25&apos;E</span>
+                <div className="flex items-center justify-between text-[10px] font-mono text-neutral-400 mb-4 pb-2 border-b border-white/5">
+                  <span className="text-[#ff9a3c] font-semibold">SURVEY OF INDIA CARTOGRAPHIC ALIGNMENT</span>
+                  <span>PIN: 262802 ⇄ NCR 110030</span>
                 </div>
 
-                <div className="relative w-full aspect-[400/470]">
-                  <svg
-                    viewBox="0 0 400 470"
-                    className="w-full h-full drop-shadow-[0_0_25px_rgba(255,154,60,0.2)]"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <defs>
-                      <linearGradient id="sovereignIndiaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#25160d" stopOpacity="0.9" />
-                        <stop offset="50%" stopColor="#1a110a" stopOpacity="0.85" />
-                        <stop offset="100%" stopColor="#120c08" stopOpacity="0.95" />
-                      </linearGradient>
-                      <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
-                        <feGaussianBlur stdDeviation="3.5" result="blur" />
-                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                      </filter>
-                    </defs>
-
-                    {/* Official Sovereign India Map Outline (Strictly including complete J&K, Ladakh, Arunachal Pradesh & Peninsular contours) */}
-                    <path
-                      d="M138 20 C146 12, 160 8, 175 14 C186 18, 196 30, 202 44 C205 58, 192 70, 190 80 C187 90, 176 94, 166 100 C156 106, 142 104, 132 112 C122 120, 107 127, 97 142 C87 157, 77 172, 80 192 C82 207, 97 217, 110 222 C117 226, 127 222, 140 230 C152 238, 157 250, 160 267 C164 287, 170 312, 182 337 C192 357, 204 387, 217 412 C220 420, 217 427, 212 430 C207 424, 197 392, 187 367 C177 342, 164 307, 152 287 C142 270, 122 252, 107 247 C92 242, 70 237, 62 217 C54 197, 57 177, 64 162 C72 147, 87 137, 92 122 C97 107, 107 87, 117 67 C127 47, 130 28, 138 20 Z
-                         M175 97 C190 94, 215 97, 240 107 C265 117, 290 127, 310 137 C330 147, 355 150, 375 144 C385 142, 392 150, 388 160 C382 172, 365 180, 350 184 C330 188, 315 192, 305 202 C295 212, 280 220, 265 217 C250 214, 235 207, 220 204 C205 200, 190 197, 175 200"
-                      fill="url(#sovereignIndiaGrad)"
-                      stroke="#ff9a3c"
-                      strokeWidth="2.2"
-                      filter="url(#neonGlow)"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                {/* 3D Isometric Mode (Matching reference image with authentic relief) */}
+                {mapMode === 'isometric' ? (
+                  <div className="relative w-full aspect-[4/3] flex items-center justify-center p-2 group">
+                    <img
+                      src={getAssetUrl('assets/resource/india_map_3d.png')}
+                      alt="3D Extruded Isometric Map of India - Survey of India Sovereignty"
+                      className="w-full h-auto object-contain drop-shadow-[0_20px_35px_rgba(255,154,60,0.18)] transition-transform duration-500 group-hover:scale-102"
                     />
 
-                    {/* Andaman & Nicobar Islands (Official Sovereign Territory) */}
-                    <g opacity="0.8">
-                      <circle cx="340" cy="380" r="2" fill="#ff9a3c" />
-                      <circle cx="343" cy="390" r="2.2" fill="#ff9a3c" />
-                      <circle cx="345" cy="402" r="2.5" fill="#ff9a3c" />
-                      <circle cx="348" cy="415" r="2" fill="#ff9a3c" />
-                      <text x="355" y="405" fill="#a3a3a3" fontSize="7" fontFamily="monospace">Andaman & Nicobar</text>
-                    </g>
-
-                    {/* Lakshadweep Islands */}
-                    <g opacity="0.8">
-                      <circle cx="120" cy="370" r="1.8" fill="#38bdf8" />
-                      <circle cx="122" cy="380" r="1.8" fill="#38bdf8" />
-                      <circle cx="124" cy="390" r="1.8" fill="#38bdf8" />
-                      <text x="75" y="385" fill="#a3a3a3" fontSize="7" fontFamily="monospace">Lakshadweep</text>
-                    </g>
-
-                    {/* Cyber Latitude / Longitude Telemetry Grid */}
-                    <line x1="30" y1="140" x2="370" y2="140" stroke="#ff9a3c" strokeWidth="0.4" strokeDasharray="3 4" opacity="0.25" />
-                    <line x1="30" y1="250" x2="370" y2="250" stroke="#ff9a3c" strokeWidth="0.4" strokeDasharray="3 4" opacity="0.25" />
-                    <line x1="30" y1="360" x2="370" y2="360" stroke="#ff9a3c" strokeWidth="0.4" strokeDasharray="3 4" opacity="0.25" />
-                    <line x1="160" y1="20" x2="160" y2="440" stroke="#ff9a3c" strokeWidth="0.4" strokeDasharray="3 4" opacity="0.25" />
-                    <line x1="270" y1="90" x2="270" y2="440" stroke="#ff9a3c" strokeWidth="0.4" strokeDasharray="3 4" opacity="0.25" />
-
-                    {/* Glowing Vector Telemetry Paths Connecting Sajal's Nodes */}
-                    <line x1="156" y1="140" x2="150" y2="160" stroke="#ff9a3c" strokeWidth="1.8" strokeDasharray="3 3" className="animate-pulse" />
-                    <line x1="150" y1="160" x2="179" y2="168" stroke="#38bdf8" strokeWidth="1.8" strokeDasharray="3 3" className="animate-pulse" />
-                  </svg>
-
-                  {/* Dynamic Nodes Markers */}
-                  {NODES.map((node) => {
-                    const isSelected = activeNode.id === node.id;
-                    return (
-                      <button
-                        key={node.id}
-                        onClick={() => selectNode(node)}
-                        style={{ left: `${node.xPercent}%`, top: `${node.yPercent}%` }}
-                        className="absolute -translate-x-1/2 -translate-y-1/2 group focus:outline-none cursor-pointer z-30"
-                        title={`${node.name} (${node.coords})`}
-                      >
-                        <span className="relative flex h-8 w-8 items-center justify-center">
-                          <span
-                            className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-60"
-                            style={{ backgroundColor: node.color }}
-                          />
-                          <span
-                            className={`relative inline-flex rounded-full h-3.5 w-3.5 transition-all duration-300 ${
-                              isSelected ? 'scale-125 ring-2 ring-white shadow-[0_0_15px_#ff9a3c]' : 'opacity-80 group-hover:scale-110'
-                            }`}
-                            style={{ backgroundColor: node.color }}
-                          />
-                        </span>
-                        
-                        {/* Hover/Active Label */}
-                        <div
-                          className={`absolute left-1/2 -bottom-7 -translate-x-1/2 px-2 py-0.5 rounded text-[10px] font-mono whitespace-nowrap transition-all duration-200 border ${
-                            isSelected
-                              ? 'bg-black/90 text-white border-[#ff9a3c] shadow-lg scale-105'
-                              : 'bg-black/70 text-neutral-400 border-white/10 group-hover:text-white'
-                          }`}
+                    {/* Dynamic Beacon Overlays on the 3D Extruded Map */}
+                    {NODES.map((node) => {
+                      const isSelected = activeNode.id === node.id;
+                      return (
+                        <button
+                          key={node.id}
+                          onClick={() => selectNode(node)}
+                          style={{ left: `${node.isoX}%`, top: `${node.isoY}%` }}
+                          className="absolute -translate-x-1/2 -translate-y-1/2 group focus:outline-none cursor-pointer z-30"
+                          title={`${node.name} (${node.coords})`}
                         >
-                          {node.name.split(' ')[0]}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
+                          <span className="relative flex h-8 w-8 items-center justify-center">
+                            <span
+                              className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-60"
+                              style={{ backgroundColor: node.color }}
+                            />
+                            <span
+                              className={`relative inline-flex rounded-full h-4 w-4 transition-all duration-300 ${
+                                isSelected ? 'scale-125 ring-2 ring-white shadow-[0_0_18px_#ff9a3c]' : 'opacity-85 group-hover:scale-115'
+                              }`}
+                              style={{ backgroundColor: node.color }}
+                            />
+                          </span>
+                          
+                          {/* Hover/Active Label */}
+                          <div
+                            className={`absolute left-1/2 -bottom-7 -translate-x-1/2 px-2.5 py-0.5 rounded text-[10px] font-mono whitespace-nowrap transition-all duration-200 border ${
+                              isSelected
+                                ? 'bg-[#120e0a] text-white border-[#ff9a3c] shadow-xl scale-105 font-bold'
+                                : 'bg-black/80 text-neutral-300 border-white/10 group-hover:text-white'
+                            }`}
+                          >
+                            {node.name.split('/')[0].trim()}
+                          </div>
+                        </button>
+                      );
+                    })}
+
+                    {/* Flight Trajectory Laser Arc */}
+                    <svg className="absolute inset-0 w-full h-full pointer-events-none z-20">
+                      <line
+                        x1="35.5%"
+                        y1="34%"
+                        x2="38%"
+                        y2="28.5%"
+                        stroke="#ff9a3c"
+                        strokeWidth="1.8"
+                        strokeDasharray="3 3"
+                        className="animate-pulse"
+                      />
+                      <line
+                        x1="35.5%"
+                        y1="34%"
+                        x2="44.5%"
+                        y2="36.5%"
+                        stroke="#38bdf8"
+                        strokeWidth="1.8"
+                        strokeDasharray="3 3"
+                        className="animate-pulse"
+                      />
+                    </svg>
+                  </div>
+                ) : (
+                  /* Vector Cyber Mode */
+                  <div className="relative w-full aspect-[400/470]">
+                    <svg
+                      viewBox="0 0 400 470"
+                      className="w-full h-full drop-shadow-[0_0_25px_rgba(255,154,60,0.2)]"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <defs>
+                        <linearGradient id="sovereignIndiaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor="#25160d" stopOpacity="0.9" />
+                          <stop offset="50%" stopColor="#1a110a" stopOpacity="0.85" />
+                          <stop offset="100%" stopColor="#120c08" stopOpacity="0.95" />
+                        </linearGradient>
+                        <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+                          <feGaussianBlur stdDeviation="3.5" result="blur" />
+                          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                        </filter>
+                      </defs>
+
+                      {/* Official Sovereign India Map Outline (Strictly including complete J&K, Ladakh, Arunachal Pradesh & Peninsular contours) */}
+                      <path
+                        d="M138 20 C146 12, 160 8, 175 14 C186 18, 196 30, 202 44 C205 58, 192 70, 190 80 C187 90, 176 94, 166 100 C156 106, 142 104, 132 112 C122 120, 107 127, 97 142 C87 157, 77 172, 80 192 C82 207, 97 217, 110 222 C117 226, 127 222, 140 230 C152 238, 157 250, 160 267 C164 287, 170 312, 182 337 C192 357, 204 387, 217 412 C220 420, 217 427, 212 430 C207 424, 197 392, 187 367 C177 342, 164 307, 152 287 C142 270, 122 252, 107 247 C92 242, 70 237, 62 217 C54 197, 57 177, 64 162 C72 147, 87 137, 92 122 C97 107, 107 87, 117 67 C127 47, 130 28, 138 20 Z
+                           M175 97 C190 94, 215 97, 240 107 C265 117, 290 127, 310 137 C330 147, 355 150, 375 144 C385 142, 392 150, 388 160 C382 172, 365 180, 350 184 C330 188, 315 192, 305 202 C295 212, 280 220, 265 217 C250 214, 235 207, 220 204 C205 200, 190 197, 175 200"
+                        fill="url(#sovereignIndiaGrad)"
+                        stroke="#ff9a3c"
+                        strokeWidth="2.2"
+                        filter="url(#neonGlow)"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+
+                      {/* Andaman & Nicobar Islands (Official Sovereign Territory) */}
+                      <g opacity="0.8">
+                        <circle cx="340" cy="380" r="2" fill="#ff9a3c" />
+                        <circle cx="343" cy="390" r="2.2" fill="#ff9a3c" />
+                        <circle cx="345" cy="402" r="2.5" fill="#ff9a3c" />
+                        <circle cx="348" cy="415" r="2" fill="#ff9a3c" />
+                        <text x="355" y="405" fill="#a3a3a3" fontSize="7" fontFamily="monospace">Andaman & Nicobar</text>
+                      </g>
+
+                      {/* Lakshadweep Islands */}
+                      <g opacity="0.8">
+                        <circle cx="120" cy="370" r="1.8" fill="#38bdf8" />
+                        <circle cx="122" cy="380" r="1.8" fill="#38bdf8" />
+                        <circle cx="124" cy="390" r="1.8" fill="#38bdf8" />
+                        <text x="75" y="385" fill="#a3a3a3" fontSize="7" fontFamily="monospace">Lakshadweep</text>
+                      </g>
+
+                      {/* Cyber Latitude / Longitude Telemetry Grid */}
+                      <line x1="30" y1="140" x2="370" y2="140" stroke="#ff9a3c" strokeWidth="0.4" strokeDasharray="3 4" opacity="0.25" />
+                      <line x1="30" y1="250" x2="370" y2="250" stroke="#ff9a3c" strokeWidth="0.4" strokeDasharray="3 4" opacity="0.25" />
+                      <line x1="30" y1="360" x2="370" y2="360" stroke="#ff9a3c" strokeWidth="0.4" strokeDasharray="3 4" opacity="0.25" />
+                      <line x1="160" y1="20" x2="160" y2="440" stroke="#ff9a3c" strokeWidth="0.4" strokeDasharray="3 4" opacity="0.25" />
+                      <line x1="270" y1="90" x2="270" y2="440" stroke="#ff9a3c" strokeWidth="0.4" strokeDasharray="3 4" opacity="0.25" />
+
+                      {/* Glowing Vector Telemetry Paths */}
+                      <line x1="156" y1="140" x2="150" y2="160" stroke="#ff9a3c" strokeWidth="1.8" strokeDasharray="3 3" className="animate-pulse" />
+                      <line x1="150" y1="160" x2="179" y2="168" stroke="#38bdf8" strokeWidth="1.8" strokeDasharray="3 3" className="animate-pulse" />
+                    </svg>
+
+                    {/* Dynamic Nodes Markers for Vector Mode */}
+                    {NODES.map((node) => {
+                      const isSelected = activeNode.id === node.id;
+                      return (
+                        <button
+                          key={node.id}
+                          onClick={() => selectNode(node)}
+                          style={{ left: `${node.xPercent}%`, top: `${node.yPercent}%` }}
+                          className="absolute -translate-x-1/2 -translate-y-1/2 group focus:outline-none cursor-pointer z-30"
+                          title={`${node.name} (${node.coords})`}
+                        >
+                          <span className="relative flex h-8 w-8 items-center justify-center">
+                            <span
+                              className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-60"
+                              style={{ backgroundColor: node.color }}
+                            />
+                            <span
+                              className={`relative inline-flex rounded-full h-3.5 w-3.5 transition-all duration-300 ${
+                                isSelected ? 'scale-125 ring-2 ring-white shadow-[0_0_15px_#ff9a3c]' : 'opacity-80 group-hover:scale-110'
+                              }`}
+                              style={{ backgroundColor: node.color }}
+                            />
+                          </span>
+                          
+                          {/* Hover/Active Label */}
+                          <div
+                            className={`absolute left-1/2 -bottom-7 -translate-x-1/2 px-2 py-0.5 rounded text-[10px] font-mono whitespace-nowrap transition-all duration-200 border ${
+                              isSelected
+                                ? 'bg-black/90 text-white border-[#ff9a3c] shadow-lg scale-105'
+                                : 'bg-black/70 text-neutral-400 border-white/10 group-hover:text-white'
+                            }`}
+                          >
+                            {node.name.split(' ')[0]}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
 
                 {/* Bottom Node Switcher Buttons */}
                 <div className="grid grid-cols-3 gap-2 mt-6 pt-4 border-t border-white/10">

@@ -14,6 +14,7 @@ import { SkillsSection } from './components/SkillsSection';
 import { EducationSection } from './components/EducationSection';
 import { ContactSection } from './components/ContactSection';
 import { IndiaSpatialMap } from './components/IndiaSpatialMap';
+import { MetaverseCityAdventure } from './components/MetaverseCityAdventure';
 import { SmartBot } from './components/SmartBot';
 import { Kinetic3DName } from './components/Kinetic3DName';
 import { soundEngine } from './utils/audio';
@@ -167,6 +168,16 @@ export default function App() {
         <ul className="services small" aria-label="Portfolio Sections">
           <li>
             <button
+              onClick={() => scrollToSection('#metaverse-city')}
+              className="rv text-neutral-300 hover:text-[#ff9a3c] transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#ff9a3c]/15 hover:bg-[#ff9a3c]/25 border border-[#ff9a3c]/40 backdrop-blur-sm shadow-[0_0_12px_rgba(255,154,60,0.25)]"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#ff9a3c] animate-ping" />
+              <span className="text-[#ff9a3c] font-bold">00. 3D Metaverse City</span>
+              <ChevronRight size={13} className="text-[#ff9a3c]" />
+            </button>
+          </li>
+          <li>
+            <button
               onClick={() => scrollToSection('#projects')}
               className="rv text-neutral-300 hover:text-[#ff9a3c] transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/40 hover:bg-black/70 border border-white/10 hover:border-[#ff9a3c]/50 backdrop-blur-sm"
             >
@@ -215,12 +226,17 @@ export default function App() {
 
         {/* Scroll Down Guide Button */}
         <button
-          onClick={() => scrollToSection('#projects')}
+          onClick={() => scrollToSection('#metaverse-city')}
           className="absolute bottom-8 sm:bottom-12 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 px-5 py-2.5 rounded-full bg-black/60 border border-white/15 text-neutral-300 hover:text-white hover:bg-black/90 hover:border-[#ff9a3c] transition-all text-xs font-mono shadow-2xl group active:scale-95"
         >
-          <span>Explore All Sections</span>
+          <span>Enter 3D Metaverse City</span>
           <ArrowDown size={14} className="text-[#ff9a3c] group-hover:translate-y-1 transition-transform" />
         </button>
+      </section>
+
+      {/* Section 00: 3D Adventure Metaverse City Engine */}
+      <section id="metaverse-city" className="relative w-full">
+        <MetaverseCityAdventure />
       </section>
 
       {/* Section 01: Projects */}
