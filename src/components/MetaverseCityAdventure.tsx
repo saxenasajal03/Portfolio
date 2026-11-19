@@ -727,11 +727,38 @@ export const MetaverseCityAdventure: React.FC = () => {
       (err) => console.warn('3D India Map asset warning:', err)
     );
 
-    // --- Interactive Raycaster for Clicking Buildings ---
+    // --- Interactive Raycaster & Smooth Orbit Drag Controls ---
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
+    let isDragging = false;
+    let prevPointerPos = { x: 0, y: 0 };
+    let hasMoved = false;
 
-    const handlePointerDown = (e: MouseEvent) => {
+    const onPointerDown = (e: PointerEvent) => {
+      isDragging = true;
+      hasMoved = false;
+      prevPointerPos = { x: e.clientX, y: e.clientY };
+    };
+
+    const onPointerMove = (e: PointerEvent) => {
+      if (!isDragging) return;
+      const dx = e.clientX - prevPointerPos.x;
+      const dy = e.clientY - prevPointerPos.y;
+      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+        hasMoved = true;
+      }
+      prevPointerPos = { x: e.clientX, y: e.clientY };
+
+      cityGroup.rotation.y += dx * 0.006;
+      if (viewMode === 'city') {
+        cameraTargetPos.current.y = Math.max(8, Math.min(28, cameraTargetPos.current.y - dy * 0.05));
+      }
+    };
+
+    const onPointerUp = (e: PointerEvent) => {
+      isDragging = false;
+      if (hasMoved) return;
+
       const rect = renderer.domElement.getBoundingClientRect();
       mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
@@ -751,7 +778,9 @@ export const MetaverseCityAdventure: React.FC = () => {
       }
     };
 
-    renderer.domElement.addEventListener('pointerdown', handlePointerDown);
+    renderer.domElement.addEventListener('pointerdown', onPointerDown);
+    window.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('pointerup', onPointerUp);
 
     // --- Handle Resize ---
     const handleResize = () => {
@@ -827,7 +856,9 @@ export const MetaverseCityAdventure: React.FC = () => {
     return () => {
       cancelAnimationFrame(animId);
       window.removeEventListener('resize', handleResize);
-      renderer.domElement.removeEventListener('pointerdown', handlePointerDown);
+      renderer.domElement.removeEventListener('pointerdown', onPointerDown);
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerup', onPointerUp);
       renderer.dispose();
     };
   }, [viewMode, isTourPlaying]);
