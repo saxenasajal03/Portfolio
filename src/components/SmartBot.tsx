@@ -7,11 +7,6 @@ import {
   Download,
   Mail,
   ChevronRight,
-  Briefcase,
-  Award,
-  Layers,
-  Terminal,
-  Zap,
   Phone,
   MessageSquare,
   Volume2,
@@ -19,14 +14,8 @@ import {
   Mic,
   MicOff,
   CheckCircle2,
-  Building2,
-  GraduationCap,
   Sparkle,
-  Copy,
-  Clock,
-  Compass,
-  FileText,
-  UserCheck
+  Copy
 } from 'lucide-react';
 import { soundEngine } from '../utils/audio';
 import { getAssetUrl } from '../utils/assets';
@@ -68,20 +57,20 @@ export const SmartBot: React.FC = () => {
     {
       id: 'init-msg',
       sender: 'bot',
-      title: "Welcome to Sajal's Portfolio Dossier",
-      badge: "Recruiter & Executive Intelligence",
+      title: "Hello! Welcome to Sajal Saxena's Dossier",
+      badge: "Professional Portfolio Intelligence",
       text:
-        "Hello! I am **Sajal's Assistant**.\n\n" +
-        "Sajal Saxena is a **Full-Stack Software Engineer** and **Business Development Associate** in Urban Company's Central SBC Quality team in New Delhi. He combines enterprise React/Node systems engineering with operational root-cause analysis (RCA) and SLA management.\n\n" +
-        "Feel free to ask in English, Hindi, or any language about:\n" +
-        "• **Urban Company Experience** (SLA Governance, Real-Time Attendance >80%, Jarvis SQL)\n" +
-        "• **Core Systems** (Elexoplus D2C/B2B ERP, ConnectX WebRTC, Plant Leaf CNN Classifier)\n" +
-        "• **Tech Stack & Certifications** (Oracle 2025 GenAI Pro, React 19, TypeScript, Three.js, Python)",
+        "नमस्ते! I am **Sajal's Assistant**.\n\n" +
+        "Sajal Saxena is a **Full-Stack Software Engineer** and **Business Development Associate** in Urban Company's Central SBC Quality team in New Delhi. He specializes in enterprise React/Node architecture, operational root-cause analysis (RCA), and SLA compliance.\n\n" +
+        "You can explore:\n" +
+        "• **Urban Company Operations** (SLA Governance, Real-Time Attendance >80%, Jarvis SQL)\n" +
+        "• **Flagship Engineering Systems** (Elexoplus D2C/B2B ERP, ConnectX WebRTC, Plant Leaf CNN Classifier)\n" +
+        "• **Credentials** (Oracle 2025 GenAI Professional, React 19, TypeScript, Three.js, Python)",
       kpis: [
         { label: 'RT Attendance', value: '> 80% SLA' },
         { label: 'Latency Drop', value: '-30% Latency' },
         { label: 'ML Accuracy', value: '> 95% CNN' },
-        { label: 'GenAI Cert', value: 'Oracle 2025' }
+        { label: 'GenAI Credential', value: 'Oracle 2025' }
       ],
       highlights: [
         'Urban Company: Central SBC Quality Team (Ghitorni, New Delhi)',
@@ -92,7 +81,7 @@ export const SmartBot: React.FC = () => {
       actions: [
         { label: 'Download Resume PDF', icon: 'download' },
         { label: 'Review Urban Company Role', icon: 'scroll', target: '#experience' },
-        { label: 'Schedule Discussion', icon: 'mail', target: 'mailto:sajalsaxenagola@gmail.com' }
+        { label: 'Direct Email', icon: 'mail', target: 'mailto:sajalsaxenagola@gmail.com' }
       ],
     },
   ]);
@@ -105,8 +94,8 @@ export const SmartBot: React.FC = () => {
     }
   }, [messages, isTyping, isOpen]);
 
-  // Multilingual Speech Synthesizer (Natural female tone in Hindi/English)
-  const speakVoice = (text: string, messageId: string) => {
+  // Female Hindi-Toned Speech Synthesizer
+  const speakFemaleHindiTone = (text: string, messageId: string) => {
     if (!('speechSynthesis' in window)) return;
 
     window.speechSynthesis.cancel();
@@ -124,35 +113,27 @@ export const SmartBot: React.FC = () => {
       .replace(/•/g, ', ')
       .trim();
 
-    const hasHindi = /[\u0900-\u097F]/.test(cleanSpeech);
     const utterance = new SpeechSynthesisUtterance(cleanSpeech);
-    utterance.lang = hasHindi ? 'hi-IN' : 'en-US';
-    utterance.pitch = 1.15; // Natural pleasant tone
-    utterance.rate = 0.96;
+    // Use Hindi or Indian female voice synthesis
+    utterance.lang = 'hi-IN';
+    utterance.pitch = 1.2; // Natural pleasant sweet female voice register
+    utterance.rate = 0.94; // Clear, polite pacing
 
     const voices = window.speechSynthesis.getVoices();
-    if (hasHindi) {
-      const femaleHindi = voices.find(
-        (v) =>
-          (v.lang.includes('hi') || v.lang.includes('Hindi')) &&
-          (v.name.toLowerCase().includes('female') ||
-            v.name.toLowerCase().includes('kalpana') ||
-            v.name.toLowerCase().includes('swara') ||
-            v.name.toLowerCase().includes('zira') ||
-            v.name.toLowerCase().includes('google हिन्दी'))
-      ) || voices.find((v) => v.lang.includes('hi'));
-      if (femaleHindi) utterance.voice = femaleHindi;
-    } else {
-      const femaleEnglish = voices.find(
-        (v) =>
-          (v.lang.includes('en') || v.lang.includes('US') || v.lang.includes('GB')) &&
-          (v.name.toLowerCase().includes('female') ||
-            v.name.toLowerCase().includes('samantha') ||
-            v.name.toLowerCase().includes('zira') ||
-            v.name.toLowerCase().includes('natural') ||
-            v.name.toLowerCase().includes('google us english'))
-      );
-      if (femaleEnglish) utterance.voice = femaleEnglish;
+    // Prioritize female Hindi or Indian voices
+    const femaleVoice = voices.find(
+      (v) =>
+        (v.lang.includes('hi') || v.lang.includes('IN')) &&
+        (v.name.toLowerCase().includes('female') ||
+          v.name.toLowerCase().includes('kalpana') ||
+          v.name.toLowerCase().includes('swara') ||
+          v.name.toLowerCase().includes('aditi') ||
+          v.name.toLowerCase().includes('zira') ||
+          v.name.toLowerCase().includes('google हिन्दी'))
+    ) || voices.find((v) => v.lang.includes('hi') || v.lang.includes('IN'));
+
+    if (femaleVoice) {
+      utterance.voice = femaleVoice;
     }
 
     utterance.onstart = () => {
@@ -188,7 +169,7 @@ export const SmartBot: React.FC = () => {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  // Live Speech-to-Text Recognition
+  // Live Speech Recognition
   const toggleListening = () => {
     const SpeechRecognition =
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -208,10 +189,10 @@ export const SmartBot: React.FC = () => {
     stopSpeaking();
     soundEngine.playResonance();
     setIsListening(true);
-    setTranscriptPreview('Listening... Speak naturally');
+    setTranscriptPreview('Listening live...');
 
     const recognition = new SpeechRecognition();
-    recognition.lang = navigator.language || 'en-US';
+    recognition.lang = 'hi-IN';
     recognition.interimResults = true;
     recognition.continuous = false;
 
@@ -245,32 +226,31 @@ export const SmartBot: React.FC = () => {
     recognition.start();
   };
 
-  // Recruiter-Friendly Multilingual Intelligence Engine
-  const generateMultilingualResponse = (query: string): Omit<Message, 'id' | 'sender' | 'timestamp'> => {
+  const generateResponse = (query: string): Omit<Message, 'id' | 'sender' | 'timestamp'> => {
     const lq = query.toLowerCase();
-    const hasHindi = /[\u0900-\u097F]/.test(query);
+    const isHindi = /[\u0900-\u097F]/.test(query) || lq.includes('kaun') || lq.includes('kya') || lq.includes('batao') || lq.includes('kaise');
 
-    // 1. Urban Company & Experience Queries
+    // Urban Company
     if (lq.includes('urban') || lq.includes('experience') || lq.includes('job') || lq.includes('role') || lq.includes('quality') || lq.includes('sla') || lq.includes('अर्बन') || lq.includes('काम')) {
-      if (hasHindi) {
+      if (isHindi) {
         return {
-          title: 'अर्बन कंपनी: मुख्य रोल और व्यावसायिक प्रभाव',
-          badge: 'Central SBC Quality · Ghitorni, New Delhi',
+          title: 'अर्बन कंपनी: मुख्य रोल और जिम्मेदारियाँ',
+          badge: 'Central SBC Quality Team · New Delhi',
           text:
-            'सजल सक्सेना वर्तमान में अर्बन कंपनी की सेंट्रल SBC क्वालिटी टीम में Business Development Associate हैं (अप्रैल 2026 – वर्तमान):\n\n' +
-            '• **Tier 1 और Tier 2 एस्केलेशन मैनेजमेंट**: गंभीर ऑपरेशनल बाधाओं और पार्टनर समस्याओं का स्ट्रक्चर्ड रूट-कॉज़ एनालिसिस (RCA) द्वारा तुरंत समाधान।\n' +
-            '• **80%+ रियल-टाइम अटेंडेंस**: संपूर्ण रीजन में सर्विस पार्टनर्स की रियल-टाइम (RT) अटेंडेंस को निरंतर 80% से ऊपर बनाए रखना।\n' +
-            '• **डेटा-ड्रिवन टेलीमेट्री**: जार्विस एनालिटिक्स, आधुनिक SQL क्वेरीज़ और एडवांस्ड एक्सेल मॉडल्स द्वारा SLA कम्प्लायंस की लाइव ट्रैकिंग।\n' +
-            '• **AI हैंडहोल्डिंग व अपग्रेड्स**: पार्टनर अपग्रेड ट्रेनिंग और नए AI ऑटोमेशन इनिशिएटिव्स का सफल संचालन।',
+            'सजल सक्सेना अर्बन कंपनी की सेंट्रल SBC क्वालिटी टीम में Business Development Associate हैं (अप्रैल 2026 – वर्तमान):\n\n' +
+            '• **Tier 1 और Tier 2 एस्केलेशंस**: ऑपरेशन्स की जटिल समस्याओं का रूट-कॉज़ एनालिसिस (RCA) द्वारा तुरंत समाधान निकालते हैं।\n' +
+            '• **80%+ रियल-टाइम अटेंडेंस**: संपूर्ण रीजन में सर्विस पार्टनर्स की रियल-टाइम (RT) अटेंडेंस को निरंतर 80% से ऊपर बनाए रखते हैं।\n' +
+            '• **जार्विस एनालिटिक्स व SQL**: आधुनिक SQL क्वेरीज़ और जार्विस डैशबोर्ड द्वारा SLA कम्प्लायंस की लाइव ट्रैकिंग करते हैं।\n' +
+            '• **AI हैंडहोल्डिंग पायलट लीड**: पार्टनर ट्रेनिंग और AI ऑटोमेशन इनिशिएटिव्स का सफल संचालन करते हैं।',
           kpis: [
-            { label: 'RT Attendance', value: '> 80% Benchmark' },
-            { label: 'Resolution', value: 'Tier 1/2 RCA' },
-            { label: 'Tooling', value: 'Jarvis SQL' }
+            { label: 'RT Attendance', value: '> 80% SLA' },
+            { label: 'Escalations', value: 'Tier 1/2 RCA' },
+            { label: 'Telemetry', value: 'Jarvis SQL' }
           ],
           highlights: [
             'ऑपरेशनल बॉटलनेक्स का डेटा-आधारित रूट-कॉज़ एनालिसिस',
             'SLA कम्प्लायंस और पार्टनर रिटेंशन में सिद्ध योगदान',
-            'क्रॉस-फंक्शनल AI हैंडहोल्डिंग पायलट का सफल नेतृत्व'
+            'AI हैंडहोल्डिंग पायलट का सफल नेतृत्व'
           ],
           actions: [
             { label: 'View Experience Timeline', icon: 'scroll', target: '#experience' },
@@ -284,7 +264,7 @@ export const SmartBot: React.FC = () => {
         badge: 'Central SBC Quality Team · Ghitorni, New Delhi',
         text:
           'Sajal serves as **Business Development Associate** in Urban Company\'s Central SBC Quality team (Apr 2026 – Present):\n\n' +
-          '• **Tier 1 & Tier 2 Escalation Governance**: Deconstructs high-severity operational bottlenecks through rigorous Root-Cause Analysis (RCA) and cross-functional corrective workflows.\n' +
+          '• **Tier 1 & Tier 2 Escalation Governance**: Deconstructs high-severity operational bottlenecks through structured Root-Cause Analysis (RCA) and cross-functional corrective workflows.\n' +
           '• **Cohort Reliability (>80% RT Attendance)**: Maintains operational service cohort health above strict Real-Time attendance compliance thresholds exceeding 80%.\n' +
           '• **Jarvis Analytics & High-Throughput SQL**: Executes relational queries and telemetry dashboards to govern partner Service Level Agreements (SLAs).\n' +
           '• **AI Handholding Pilot & Partner Training**: Drives training modules and pilot testing for internal AI diagnostic tools to accelerate partner enablement.',
@@ -306,17 +286,17 @@ export const SmartBot: React.FC = () => {
       };
     }
 
-    // 2. Projects & Systems Architecture Queries
+    // Projects
     if (lq.includes('project') || lq.includes('elexoplus') || lq.includes('connectx') || lq.includes('cnn') || lq.includes('billing') || lq.includes('प्रोजेक्ट')) {
-      if (hasHindi) {
+      if (isHindi) {
         return {
-          title: 'सजल के प्रमुख इंजीनियरिंग सिस्टम्स',
-          badge: 'Production Systems & Real-Time Tech',
+          title: 'सजल के प्रमुख 4 इंजीनियरिंग सिस्टम्स',
+          badge: 'Production Systems & Full-Stack',
           text:
-            'सजल सक्सेना द्वारा निर्मित प्रमुख 4 इंजीनियरिंग सिस्टम्स:\n\n' +
-            '1. **Elexoplus Commerce & ERP Suite** *(React, Node, Express, MySQL)*:\n   D2C स्टोर (`elexoplus.com`) और B2B होलसेल पोर्टल (`b2b.elexoplus.com`) का एकीकृत ईआरपी प्लेटफॉर्म। इसमें RBAC, इन्वेंट्री ट्रैकिंग और ऑटोमेटेड रीकंसीलिएशन शामिल है।\n\n' +
-            '2. **ConnectX Video Calling Engine** *(React, WebRTC, Socket.io, MongoDB)*:\n   सब-100ms लेटेंसी वाला एन्क्रिप्टेड पीयर-टू-पीयर वीडियो व चैट प्लेटफॉर्म, जो हेवी लोड में भी स्थिर रहता है।\n\n' +
-            '3. **Plant Leaf Disease Identifier (CNN)** *(Python, TensorFlow, OpenCV)*:\n   फसलों की पत्तियों के रोगों की 95%+ सटीकता से पहचान करने वाला डीप लर्निंग मॉडल।\n\n' +
+            'सजल सक्सेना द्वारा निर्मित 4 मुख्य इंजीनियरिंग प्रोजेक्ट्स:\n\n' +
+            '1. **Elexoplus Commerce & ERP Suite** *(React, Node, Express, MySQL)*:\n   D2C स्टोर (`elexoplus.com`) और B2B होलसेल पोर्टल (`b2b.elexoplus.com`) का एकीकृत ईआरपी सिस्टम।\n\n' +
+            '2. **ConnectX Real-Time Video Calling** *(React, WebRTC, Socket.io, MongoDB)*:\n   सब-100ms लेटेंसी वाला एन्क्रिप्टेड पीयर-टू-पीयर वीडियो व चैट प्लेटफॉर्म।\n\n' +
+            '3. **Plant Leaf Disease Identifier (CNN)** *(Python, TensorFlow, OpenCV)*:\n   पौधों की पत्तियों के रोगों की 95%+ सटीकता से पहचान करने वाला डीप लर्निंग मॉडल।\n\n' +
             '4. **Electricity Bill Management System** *(Java Swing, SQL Server)*:\n   ACID कम्प्लायंट डेस्कटॉप बिलिंग सॉफ्टवेयर।',
           kpis: [
             { label: 'Architecture', value: 'Dual D2C + B2B' },
@@ -326,7 +306,7 @@ export const SmartBot: React.FC = () => {
           highlights: [
             'Elexoplus: लाइव एंटरप्राइज ई-कॉमर्स व होलसेल ईआरपी',
             'ConnectX: लो-लेटेंसी WebRTC मेश नेटवर्किंग',
-            'Plant Pathology: 95%+ वैलिडेशन एक्यूरेसी'
+            'Plant Pathology: 95%+ टेस्टेड एक्यूरेसी'
           ],
           actions: [
             { label: 'Explore Projects Section', icon: 'scroll', target: '#projects' },
@@ -347,8 +327,7 @@ export const SmartBot: React.FC = () => {
         kpis: [
           { label: 'Elexoplus Model', value: 'D2C + B2B ERP' },
           { label: 'WebRTC Latency', value: '< 100ms P2P' },
-          { label: 'Computer Vision', value: '> 95% Precision' },
-          { label: 'Data Consistency', value: 'ACID Relational' }
+          { label: 'Computer Vision', value: '> 95% Precision' }
         ],
         highlights: [
           'Full lifecycle delivery from database schema design to production deployment',
@@ -363,14 +342,14 @@ export const SmartBot: React.FC = () => {
       };
     }
 
-    // 3. Skills, Arsenal & Oracle GenAI Certifications
-    if (lq.includes('skill') || lq.includes('stack') || lq.includes('cert') || lq.includes('oracle') || lq.includes('genai') || lq.includes('python') || lq.includes('react') || lq.includes('हुनर')) {
+    // Skills & Certifications
+    if (lq.includes('skill') || lq.includes('stack') || lq.includes('cert') || lq.includes('oracle') || lq.includes('genai') || lq.includes('हुनर')) {
       return {
         title: 'Technical Arsenal & Industry Certifications',
         badge: 'Enterprise Engineering Stack',
         text:
           'Sajal\'s technical stack spans modern frontends, high-throughput backends, and enterprise AI:\n\n' +
-          '• **Frontend & Spatial Web**: React 19, TypeScript, JavaScript (ES6+), Three.js WebGL, Tailwind CSS v4, HTML5/CSS3\n' +
+          '• **Frontend & Spatial Web**: React 19, TypeScript, JavaScript (ES6+), Three.js WebGL, Tailwind CSS v4\n' +
           '• **Backend & Real-Time**: Node.js, Express.js, PHP 8, REST APIs, WebRTC, Socket.io\n' +
           '• **Databases & Telemetry**: MySQL, MongoDB, Microsoft SQL Server, DB2, Jarvis Analytics, Advanced Excel\n' +
           '• **AI, Machine Learning & Vision**: TensorFlow, Keras, OpenCV, Python (NumPy, Pandas), LLMs & RAG\n\n' +
@@ -383,8 +362,7 @@ export const SmartBot: React.FC = () => {
         kpis: [
           { label: 'Generative AI', value: 'Oracle OCI 2025' },
           { label: 'HackerRank', value: '5-Star SQL/Python' },
-          { label: 'Frontend & 3D', value: 'React 19 / Three.js' },
-          { label: 'Database', value: 'MySQL / SQL Server' }
+          { label: 'Frontend & 3D', value: 'React 19 / Three.js' }
         ],
         highlights: [
           'Certified in LLM fine-tuning, RAG pipelines, and Vector DBs on Oracle Cloud',
@@ -398,16 +376,16 @@ export const SmartBot: React.FC = () => {
       };
     }
 
-    // 4. Contact & Recruiter Quick Actions
-    if (lq.includes('contact') || lq.includes('email') || lq.includes('phone') || lq.includes('hire') || lq.includes('recruit') || lq.includes('interview') || lq.includes('संपर्क') || lq.includes('बात')) {
+    // Contact
+    if (lq.includes('contact') || lq.includes('email') || lq.includes('phone') || lq.includes('hire') || lq.includes('interview') || lq.includes('संपर्क') || lq.includes('बात')) {
       return {
-        title: 'Direct Recruiter Coordinates & Availability',
-        badge: 'Open to High-Impact Opportunities',
+        title: 'Direct Coordinates & Availability',
+        badge: 'Available for Discussions',
         text:
-          'Sajal Saxena is open to high-impact software engineering, full-stack systems, and AI operations roles:\n\n' +
+          'Sajal Saxena is available for engineering and cross-functional operations discussions:\n\n' +
           '• **Primary Email**: [sajalsaxenagola@gmail.com](mailto:sajalsaxenagola@gmail.com)\n' +
           '• **Direct Phone / WhatsApp**: [+91 88408 10386](tel:+918840810386)\n' +
-          '• **LinkedIn Gateway**: [linkedin.com/in/sajal-saxena-cse/](https://www.linkedin.com/in/sajal-saxena-cse/)\n' +
+          '• **LinkedIn**: [linkedin.com/in/sajal-saxena-cse/](https://www.linkedin.com/in/sajal-saxena-cse/)\n' +
           '• **Current Hub**: Ghitorni, New Delhi (Urban Company HQ) / Gola Gokarannath, UP (PIN: 262802)',
         kpis: [
           { label: 'Response Time', value: '< 2 Hours' },
@@ -415,7 +393,7 @@ export const SmartBot: React.FC = () => {
           { label: 'Location', value: 'New Delhi / Remote' }
         ],
         highlights: [
-          'Immediate availability for recruiter screening and technical discussions',
+          'Immediate availability for technical discussions',
           'One-click official resume PDF download below',
           'Direct calendar and email triggers active'
         ],
@@ -427,7 +405,7 @@ export const SmartBot: React.FC = () => {
       };
     }
 
-    // 5. Default Executive Overview Response
+    // Default Overview
     return {
       title: 'Candidate Profile & Executive Summary',
       badge: 'Full-Stack Engineer & BDA · Urban Company',
@@ -439,8 +417,7 @@ export const SmartBot: React.FC = () => {
       kpis: [
         { label: 'Primary Role', value: 'BDA · Central Quality' },
         { label: 'Company', value: 'Urban Company' },
-        { label: 'Education', value: 'B.Tech CSE (DBUU)' },
-        { label: 'AI Credential', value: 'Oracle OCI GenAI 2025' }
+        { label: 'Education', value: 'B.Tech CSE (DBUU)' }
       ],
       highlights: [
         'Balanced competency across technical design and data-driven operations',
@@ -471,7 +448,7 @@ export const SmartBot: React.FC = () => {
     setInput('');
     setIsTyping(true);
 
-    const answer = generateMultilingualResponse(raw);
+    const answer = generateResponse(raw);
 
     setTimeout(() => {
       const botMsgId = String(Date.now() + 1);
@@ -493,7 +470,7 @@ export const SmartBot: React.FC = () => {
 
       if (voiceEnabled) {
         setTimeout(() => {
-          speakVoice(answer.text, botMsgId);
+          speakFemaleHindiTone(answer.text, botMsgId);
         }, 300);
       }
     }, 320);
@@ -513,11 +490,11 @@ export const SmartBot: React.FC = () => {
     }
   };
 
-  const quickRecruiterPills = [
+  const quickPills = [
     { label: 'Urban Company SLA & Role', query: 'Tell me about Sajal\'s experience and SLA metrics at Urban Company' },
     { label: 'Full-Stack Projects & ERP', query: 'What are Sajal\'s main projects and tech stacks?' },
     { label: 'Oracle GenAI Certification', query: 'What are Sajal\'s technical skills and Oracle GenAI certification?' },
-    { label: 'Recruiter Contacts & Resume', query: 'How can recruiters contact Sajal and download resume?' }
+    { label: 'Direct Contacts & Resume', query: 'How can I contact Sajal and download resume?' }
   ];
 
   return (
@@ -538,12 +515,9 @@ export const SmartBot: React.FC = () => {
               <div>
                 <h4 className="text-sm font-extrabold text-white tracking-wide flex items-center gap-2 font-mono">
                   Sajal&apos;s Assistant
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#ff9a3c]/20 text-[#ff9a3c] border border-[#ff9a3c]/40 font-semibold uppercase">
-                    Recruiter Ready
-                  </span>
                 </h4>
                 <p className="text-[11px] text-neutral-400 font-sans">
-                  Multilingual Portfolio Intelligence
+                  Portfolio Intelligence
                 </p>
               </div>
             </div>
@@ -584,9 +558,9 @@ export const SmartBot: React.FC = () => {
             </div>
           </div>
 
-          {/* Quick Recruiter Prompt Chips */}
+          {/* Quick Prompt Chips */}
           <div className="px-4 py-2 bg-[#18110b] border-b border-white/10 flex items-center gap-2 overflow-x-auto scrollbar-none">
-            {quickRecruiterPills.map((pill, idx) => (
+            {quickPills.map((pill, idx) => (
               <button
                 key={idx}
                 onClick={() => processQuery(pill.query)}
@@ -597,7 +571,7 @@ export const SmartBot: React.FC = () => {
             ))}
           </div>
 
-          {/* Live Microphone Listening Wave Banner */}
+          {/* Live Microphone Listening Banner */}
           {isListening && (
             <div className="p-4 bg-gradient-to-r from-[#2a1708] via-[#1e130c] to-[#2a1708] border-b border-[#ff9a3c]/40 flex items-center gap-3 animate-pulse">
               <div className="relative flex items-center justify-center w-8 h-8 rounded-full bg-[#ff9a3c]/20">
@@ -606,7 +580,7 @@ export const SmartBot: React.FC = () => {
               </div>
               <div className="flex-1">
                 <div className="text-[11px] text-[#ff9a3c] font-bold uppercase tracking-wider flex items-center gap-2">
-                  <span>Listening Live (Speak in English, Hindi, or any language)...</span>
+                  <span>Listening Live (Speak naturally)...</span>
                 </div>
                 <div className="text-xs text-white italic font-sans truncate">
                   {transcriptPreview || 'Awaiting voice input...'}
@@ -665,7 +639,7 @@ export const SmartBot: React.FC = () => {
 
                         {/* Read Aloud Button */}
                         <button
-                          onClick={() => speakVoice(m.text, m.id)}
+                          onClick={() => speakFemaleHindiTone(m.text, m.id)}
                           className={`px-2 py-1 rounded-lg text-[10px] font-mono flex items-center gap-1.5 transition-all ${
                             currentSpeakingId === m.id
                               ? 'bg-[#10b981]/25 text-[#10b981] border border-[#10b981]/50 animate-pulse font-bold'
@@ -685,7 +659,7 @@ export const SmartBot: React.FC = () => {
                     {m.text}
                   </div>
 
-                  {/* Recruiter KPI Tiles */}
+                  {/* KPI Tiles */}
                   {m.kpis && m.kpis.length > 0 && (
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-2 border-t border-white/10">
                       {m.kpis.map((kpi, kIdx) => (
@@ -751,7 +725,7 @@ export const SmartBot: React.FC = () => {
                 <span className="w-2 h-2 rounded-full bg-[#ff9a3c] animate-bounce" />
                 <span className="w-2 h-2 rounded-full bg-[#ff9a3c] animate-bounce [animation-delay:0.2s]" />
                 <span className="w-2 h-2 rounded-full bg-[#ff9a3c] animate-bounce [animation-delay:0.4s]" />
-                <span className="text-[11px] ml-1">Analyzing portfolio knowledge base...</span>
+                <span className="text-[11px] ml-1">Reviewing portfolio knowledge...</span>
               </div>
             )}
             <div ref={messagesEndRef} />
@@ -802,7 +776,7 @@ export const SmartBot: React.FC = () => {
         </div>
       )}
 
-      {/* Floating Launcher Button */}
+      {/* Floating Launcher Button - Simple & Elegant */}
       <button
         onClick={() => {
           soundEngine.playTick();
@@ -821,7 +795,7 @@ export const SmartBot: React.FC = () => {
             Sajal&apos;s Assistant
             <Sparkles size={12} className="text-[#ff9a3c]" />
           </span>
-          <span className="text-[10px] text-neutral-300 font-sans">Recruiter Ready · Multilingual</span>
+          <span className="text-[10px] text-neutral-300 font-sans">Voice AI Active</span>
         </div>
       </button>
     </div>

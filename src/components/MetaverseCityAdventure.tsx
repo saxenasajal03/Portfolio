@@ -4,20 +4,12 @@ import {
   Compass,
   Play,
   Pause,
-  Navigation,
   Layers,
-  Award,
-  Zap,
-  Cpu,
-  MapPin,
   ExternalLink,
-  Crosshair,
   Volume2,
   VolumeX,
   Building2,
-  FileText,
-  Mail,
-  Linkedin
+  Car
 } from 'lucide-react';
 import { soundEngine } from '../utils/audio';
 import { getAssetUrl } from '../utils/assets';
@@ -44,12 +36,12 @@ export interface CityDistrict {
 const DISTRICTS: CityDistrict[] = [
   {
     id: 'urban-company',
-    name: 'Central Quality Capitol',
+    name: 'Maze Bank / Urban Quality Tower',
     codename: 'SECTOR-01 // URBAN COMPANY HQ',
     tagline: 'Urban Company · Central SBC Quality Team · Ghitorni, New Delhi',
     color: '#ff9a3c',
     accentHex: 0xff9a3c,
-    buildingHeight: 12,
+    buildingHeight: 18,
     position: [0, 0, 0],
     questTitle: 'RESOLVE TIER 1 & 2 OPERATIONAL ESCALATIONS',
     questDescription:
@@ -68,13 +60,13 @@ const DISTRICTS: CityDistrict[] = [
   },
   {
     id: 'elexoplus',
-    name: 'Elexoplus Commercial Complex',
-    codename: 'SECTOR-02 // ELEXOPLUS ERP',
+    name: 'Elexoplus Twin Commerce Towers',
+    codename: 'SECTOR-02 // ELEXOPLUS ERP PLAZA',
     tagline: 'Dual Architecture: D2C Storefront + B2B Wholesale Portal',
     color: '#06b6d4',
     accentHex: 0x06b6d4,
-    buildingHeight: 10,
-    position: [15, 0, -10],
+    buildingHeight: 15,
+    position: [16, 0, -11],
     questTitle: 'SYNCHRONIZE MULTI-TIER WAREHOUSE INVENTORY',
     questDescription:
       'Architected enterprise commerce ecosystem comprising high-converting D2C Storefront (elexoplus.com) and B2B Wholesale Portal (b2b.elexoplus.com) with role-based access control (RBAC), multi-warehouse stock synchronization, and automated order-dispatch workflows.',
@@ -92,13 +84,13 @@ const DISTRICTS: CityDistrict[] = [
   },
   {
     id: 'neural-labs',
-    name: 'Neural AI & Helipad Tower',
-    codename: 'SECTOR-03 // AI CORE',
+    name: 'FIB / Neural AI Research Spire',
+    codename: 'SECTOR-03 // AI RESEARCH CORE',
     tagline: 'Oracle Cloud Certified GenAI Professional · Feynn Labs · Foliar CNN',
     color: '#10b981',
     accentHex: 0x10b981,
-    buildingHeight: 11,
-    position: [-16, 0, -12],
+    buildingHeight: 16,
+    position: [-16, 0, -13],
     questTitle: 'DEPLOY 95%+ ACCURACY BOTANICAL CNN CLASSIFIER',
     questDescription:
       'Trained deep convolutional neural network for foliar disease classification with OpenCV augmentations. Certified in Large Language Models (LLMs), RAG systems, and Vector Databases on Oracle Cloud Infrastructure (OCI 2025).',
@@ -116,13 +108,13 @@ const DISTRICTS: CityDistrict[] = [
   },
   {
     id: 'connectx',
-    name: 'ConnectX Golden Rotunda',
-    codename: 'SECTOR-04 // TELECOM ROTUNDA',
+    name: 'ConnectX Broadcast & Telecom Mast',
+    codename: 'SECTOR-04 // TELECOM RADAR ARRAY',
     tagline: 'Sub-100ms Peer-to-Peer Mesh Audio/Video & Real-Time Messaging',
     color: '#eab308',
     accentHex: 0xeab308,
-    buildingHeight: 11,
-    position: [16, 0, 13],
+    buildingHeight: 17,
+    position: [17, 0, 14],
     questTitle: 'STREAM ENCRYPTED MESH VIDEO UNDER CONCURRENT LOAD',
     questDescription:
       'Engineered distributed peer-to-peer real-time communication platform utilizing WebRTC ICE negotiation and Socket.io room orchestration with sub-100ms media streaming.',
@@ -140,13 +132,13 @@ const DISTRICTS: CityDistrict[] = [
   },
   {
     id: 'academic-citadel',
-    name: 'Academic Quad & NEP Pavilion',
-    codename: 'SECTOR-05 // ACADEMIC CITADEL',
+    name: 'Rockford Academic Quad & Dome',
+    codename: 'SECTOR-05 // CITADEL OF ENGINEERING',
     tagline: 'Dev Bhoomi Uttarakhand University (2021–2025) · UGC NEP Saarthi',
     color: '#38bdf8',
     accentHex: 0x38bdf8,
-    buildingHeight: 9,
-    position: [-15, 0, 13],
+    buildingHeight: 11,
+    position: [-16, 0, 14],
     questTitle: 'LEAD NATIONAL EDUCATION INITIATIVES & HACKATHONS',
     questDescription:
       'Graduated B.Tech in Computer Science & Engineering. Appointed NEP Saarthi Ambassador by University Grants Commission (UGC). Finalist in 36-hour Lakshagriha Hackathon 1.0 & Flipkart GRiD 6.0 track.',
@@ -164,12 +156,12 @@ const DISTRICTS: CityDistrict[] = [
   },
   {
     id: 'origin-foundry',
-    name: 'Gola Foundry & Power Ledger',
-    codename: 'SECTOR-06 // FOUNDRY HUB',
+    name: 'Paleto Grid & Industrial Substation',
+    codename: 'SECTOR-06 // POWER FOUNDRY',
     tagline: 'Gola Gokarannath Base (PIN: 262802) · Java Relational Ledger',
     color: '#ec4899',
     accentHex: 0xec4899,
-    buildingHeight: 9,
+    buildingHeight: 10,
     position: [0, 0, -22],
     questTitle: 'EXECUTE ACID TRANSACTIONS & MULTI-TABLE STORED PROCEDURES',
     questDescription:
@@ -197,7 +189,7 @@ export const MetaverseCityAdventure: React.FC = () => {
 
   const tourIndexRef = useRef<number>(0);
   const tourTimerRef = useRef<number>(0);
-  const cameraTargetPos = useRef<THREE.Vector3>(new THREE.Vector3(0, 14, 26));
+  const cameraTargetPos = useRef<THREE.Vector3>(new THREE.Vector3(0, 15, 26));
   const cameraLookAtPos = useRef<THREE.Vector3>(new THREE.Vector3(0, 5, 0));
 
   const goToDistrict = (district: CityDistrict, manual: boolean = true) => {
@@ -207,7 +199,7 @@ export const MetaverseCityAdventure: React.FC = () => {
       setIsTourPlaying(false);
     }
     const [dx, dy, dz] = district.position;
-    cameraTargetPos.current.set(dx + 10, dy + district.buildingHeight * 0.8 + 6, dz + 15);
+    cameraTargetPos.current.set(dx + 11, dy + district.buildingHeight * 0.75 + 6, dz + 16);
     cameraLookAtPos.current.set(dx, dy + district.buildingHeight * 0.45, dz);
   };
 
@@ -228,7 +220,7 @@ export const MetaverseCityAdventure: React.FC = () => {
     const width = container.clientWidth || window.innerWidth;
     const height = container.clientHeight || 720;
 
-    // --- WebGL Renderer with High-Quality Isometric Stylized Lighting ---
+    // --- WebGL Renderer ---
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
@@ -239,433 +231,476 @@ export const MetaverseCityAdventure: React.FC = () => {
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.25;
+    renderer.toneMappingExposure = 1.3;
     container.replaceChildren(renderer.domElement);
 
-    // --- Scene with Sunny Ambient Sky ---
+    // --- Scene & GTA Cinematic Atmosphere ---
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x1a1410, 0.014);
+    scene.fog = new THREE.FogExp2(0x1a1410, 0.013);
 
-    // --- Isometric Adventure Perspective Camera ---
     const camera = new THREE.PerspectiveCamera(40, width / height, 0.5, 350);
     camera.position.set(0, 18, 28);
     camera.lookAt(0, 4, 0);
 
-    // --- Sunny Stylized Lighting matching reference image ---
-    const skyLight = new THREE.HemisphereLight(0xfff6ea, 0x3d3128, 2.0);
+    // --- GTA Sunny Lighting ---
+    const skyLight = new THREE.HemisphereLight(0xfff5ea, 0x3a2c20, 2.2);
     scene.add(skyLight);
 
-    const sunLight = new THREE.DirectionalLight(0xfffaec, 2.8);
-    sunLight.position.set(25, 45, 20);
+    const sunLight = new THREE.DirectionalLight(0xfffaec, 3.2);
+    sunLight.position.set(30, 50, 25);
     sunLight.castShadow = true;
     sunLight.shadow.mapSize.width = 2048;
     sunLight.shadow.mapSize.height = 2048;
     sunLight.shadow.bias = -0.0003;
     scene.add(sunLight);
 
-    const softFill = new THREE.DirectionalLight(0xbadfff, 1.2);
-    softFill.position.set(-25, 25, -20);
-    scene.add(softFill);
-
-    // Master City Group
     const cityGroup = new THREE.Group();
     scene.add(cityGroup);
 
-    // Master India Map Group
     const indiaMapGroup = new THREE.Group();
     scene.add(indiaMapGroup);
     indiaMapGroup.visible = false;
 
-    // --- 1. Realistic Streets, Crosswalks & Sidewalks ---
-    // Ground Base
-    const groundGeo = new THREE.PlaneGeometry(150, 150);
-    const groundMat = new THREE.MeshStandardMaterial({
-      color: 0x221a14,
-      roughness: 0.9,
-    });
-    const groundMesh = new THREE.Mesh(groundGeo, groundMat);
-    groundMesh.rotation.x = -Math.PI / 2;
-    groundMesh.receiveShadow = true;
-    cityGroup.add(groundMesh);
+    // --- 1. GTA Streets, Highways & Crosswalks ---
+    const groundGeo = new THREE.PlaneGeometry(160, 160);
+    const groundMat = new THREE.MeshStandardMaterial({ color: 0x1f1914, roughness: 0.9 });
+    const ground = new THREE.Mesh(groundGeo, groundMat);
+    ground.rotation.x = -Math.PI / 2;
+    ground.receiveShadow = true;
+    cityGroup.add(ground);
 
-    // Asphalt Roads (Intersection Cross Roads)
-    const roadMat = new THREE.MeshStandardMaterial({ color: 0x242426, roughness: 0.7 });
-    const roadNS = new THREE.Mesh(new THREE.PlaneGeometry(16, 140), roadMat);
+    // Dark Asphalt Multi-Lane Roads
+    const roadMat = new THREE.MeshStandardMaterial({ color: 0x222224, roughness: 0.65 });
+    const roadNS = new THREE.Mesh(new THREE.PlaneGeometry(18, 150), roadMat);
     roadNS.rotation.x = -Math.PI / 2;
     roadNS.position.set(0, 0.02, 0);
     roadNS.receiveShadow = true;
     cityGroup.add(roadNS);
 
-    const roadEW = new THREE.Mesh(new THREE.PlaneGeometry(140, 16), roadMat);
+    const roadEW = new THREE.Mesh(new THREE.PlaneGeometry(150, 18), roadMat);
     roadEW.rotation.x = -Math.PI / 2;
     roadEW.position.set(0, 0.02, 0);
     roadEW.receiveShadow = true;
     cityGroup.add(roadEW);
 
-    // White Zebra Crossings & Center Lines
-    const lineMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    const zebraGeo = new THREE.PlaneGeometry(1.0, 3.8);
-
-    const addZebraGroup = (cx: number, cz: number, isVertical: boolean) => {
-      const zGroup = new THREE.Group();
-      for (let i = -3; i <= 3; i++) {
-        const stripe = new THREE.Mesh(zebraGeo, lineMat);
-        stripe.rotation.x = -Math.PI / 2;
-        if (isVertical) {
-          stripe.rotation.z = Math.PI / 2;
-          stripe.position.set(0, 0.04, i * 1.5);
+    // GTA Yellow Double Center Lines
+    const yellowLineMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b });
+    const addYellowDividers = (isNS: boolean) => {
+      for (let i = -70; i <= 70; i += 6) {
+        if (Math.abs(i) < 14) continue;
+        const line1 = new THREE.Mesh(new THREE.PlaneGeometry(0.2, 3.5), yellowLineMat);
+        line1.rotation.x = -Math.PI / 2;
+        if (isNS) {
+          line1.position.set(-0.25, 0.04, i);
         } else {
-          stripe.position.set(i * 1.5, 0.04, 0);
+          line1.rotation.z = Math.PI / 2;
+          line1.position.set(i, 0.04, -0.25);
         }
-        zGroup.add(stripe);
+        cityGroup.add(line1);
+
+        const line2 = new THREE.Mesh(new THREE.PlaneGeometry(0.2, 3.5), yellowLineMat);
+        line2.rotation.x = -Math.PI / 2;
+        if (isNS) {
+          line2.position.set(0.25, 0.04, i);
+        } else {
+          line2.rotation.z = Math.PI / 2;
+          line2.position.set(i, 0.04, 0.25);
+        }
+        cityGroup.add(line2);
       }
-      zGroup.position.set(cx, 0, cz);
-      cityGroup.add(zGroup);
     };
+    addYellowDividers(true);
+    addYellowDividers(false);
 
-    // 4 Crosswalks at central intersection
-    addZebraGroup(0, 11, false);
-    addZebraGroup(0, -11, false);
-    addZebraGroup(11, 0, true);
-    addZebraGroup(-11, 0, true);
+    // White Zebra Crossings
+    const zebraMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const addCrosswalk = (cx: number, cz: number, isV: boolean) => {
+      const g = new THREE.Group();
+      for (let i = -4; i <= 4; i++) {
+        const stripe = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 4.2), zebraMat);
+        stripe.rotation.x = -Math.PI / 2;
+        if (isV) {
+          stripe.rotation.z = Math.PI / 2;
+          stripe.position.set(0, 0.05, i * 1.4);
+        } else {
+          stripe.position.set(i * 1.4, 0.05, 0);
+        }
+        g.add(stripe);
+      }
+      g.position.set(cx, 0, cz);
+      cityGroup.add(g);
+    };
+    addCrosswalk(0, 13, false);
+    addCrosswalk(0, -13, false);
+    addCrosswalk(13, 0, true);
+    addCrosswalk(-13, 0, true);
 
-    // Sidewalk Curbs & Lawns (Blocks)
-    const curbMat = new THREE.MeshStandardMaterial({ color: 0xdfdfdb, roughness: 0.6 });
-    const grassMat = new THREE.MeshStandardMaterial({ color: 0x48a832, roughness: 0.8 });
+    // Sidewalk Curbs & Lawns
+    const curbMat = new THREE.MeshStandardMaterial({ color: 0xd6d3cb, roughness: 0.5 });
+    const lawnMat = new THREE.MeshStandardMaterial({ color: 0x42962e, roughness: 0.8 });
 
-    const createBlockPodium = (px: number, pz: number, w: number, d: number) => {
-      const pGroup = new THREE.Group();
-      pGroup.position.set(px, 0, pz);
+    const addCityBlockPodium = (px: number, pz: number, w: number, d: number) => {
+      const bGroup = new THREE.Group();
+      bGroup.position.set(px, 0, pz);
 
-      // Sidewalk concrete curb
-      const curb = new THREE.Mesh(new THREE.BoxGeometry(w, 0.25, d), curbMat);
-      curb.position.y = 0.125;
+      const curb = new THREE.Mesh(new THREE.BoxGeometry(w, 0.35, d), curbMat);
+      curb.position.y = 0.175;
       curb.receiveShadow = true;
-      pGroup.add(curb);
+      bGroup.add(curb);
 
-      // Inner manicured grass lawn
-      const lawn = new THREE.Mesh(new THREE.BoxGeometry(w - 2.5, 0.3, d - 2.5), grassMat);
-      lawn.position.y = 0.15;
+      const lawn = new THREE.Mesh(new THREE.BoxGeometry(w - 2.8, 0.42, d - 2.8), lawnMat);
+      lawn.position.y = 0.21;
       lawn.receiveShadow = true;
-      pGroup.add(lawn);
+      bGroup.add(lawn);
 
-      cityGroup.add(pGroup);
+      cityGroup.add(bGroup);
     };
 
-    createBlockPodium(18, -18, 20, 20);
-    createBlockPodium(-18, -18, 20, 20);
-    createBlockPodium(18, 18, 20, 20);
-    createBlockPodium(-18, 18, 20, 20);
+    addCityBlockPodium(20, -20, 22, 22);
+    addCityBlockPodium(-20, -20, 22, 22);
+    addCityBlockPodium(20, 20, 22, 22);
+    addCityBlockPodium(-20, 20, 22, 22);
 
-    // --- 2. Low-Poly Foliage Trees & Props (Matching Image Style) ---
-    const trunkMat = new THREE.MeshStandardMaterial({ color: 0x5a3d28, roughness: 0.8 });
-    const foliageMat = new THREE.MeshStandardMaterial({ color: 0x38b024, roughness: 0.7, flatShading: true });
-    const foliageMatDark = new THREE.MeshStandardMaterial({ color: 0x228b22, roughness: 0.7, flatShading: true });
+    // --- 2. GTA Street Props & Trees ---
+    const trunkMat = new THREE.MeshStandardMaterial({ color: 0x583e28, roughness: 0.8 });
+    const foliageMat = new THREE.MeshStandardMaterial({ color: 0x36a822, roughness: 0.6, flatShading: true });
+    const foliageMatDark = new THREE.MeshStandardMaterial({ color: 0x1f7a18, roughness: 0.6, flatShading: true });
 
-    const addStylizedTree = (tx: number, tz: number, scale: number = 1.0) => {
+    const addAvenueTree = (tx: number, tz: number, scale = 1.0) => {
       const tree = new THREE.Group();
       tree.position.set(tx, 0, tz);
 
-      // Trunk
-      const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.25 * scale, 0.35 * scale, 2.2 * scale, 6), trunkMat);
-      trunk.position.y = 1.1 * scale;
+      const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.25 * scale, 0.35 * scale, 2.4 * scale, 6), trunkMat);
+      trunk.position.y = 1.2 * scale;
       trunk.castShadow = true;
       tree.add(trunk);
 
-      // Segmented Foliage Spheres
-      const fol1 = new THREE.Mesh(new THREE.IcosahedronGeometry(1.3 * scale, 1), foliageMat);
-      fol1.position.y = 2.4 * scale;
+      const fol1 = new THREE.Mesh(new THREE.IcosahedronGeometry(1.4 * scale, 1), foliageMat);
+      fol1.position.y = 2.6 * scale;
       fol1.castShadow = true;
       tree.add(fol1);
 
-      const fol2 = new THREE.Mesh(new THREE.IcosahedronGeometry(1.0 * scale, 1), foliageMatDark);
-      fol2.position.set(0.3 * scale, 3.2 * scale, 0);
+      const fol2 = new THREE.Mesh(new THREE.IcosahedronGeometry(1.1 * scale, 1), foliageMatDark);
+      fol2.position.set(0.3 * scale, 3.4 * scale, 0);
       fol2.castShadow = true;
       tree.add(fol2);
 
       cityGroup.add(tree);
     };
 
-    // Plant Avenue Trees along curbs
-    const treeCoords = [
-      [9.5, 10], [9.5, 17], [9.5, 24],
-      [-9.5, 10], [-9.5, 17], [-9.5, 24],
-      [9.5, -10], [9.5, -17], [9.5, -24],
-      [-9.5, -10], [-9.5, -17], [-9.5, -24],
-      [14, 9.5], [21, 9.5], [-14, 9.5], [-21, 9.5],
-      [14, -9.5], [21, -9.5], [-14, -9.5], [-21, -9.5]
+    const treePositions = [
+      [11, 12], [11, 19], [11, 26],
+      [-11, 12], [-11, 19], [-11, 26],
+      [11, -12], [11, -19], [11, -26],
+      [-11, -12], [-11, -19], [-11, -26],
+      [17, 11], [24, 11], [-17, 11], [-24, 11],
+      [17, -11], [24, -11], [-17, -11], [-24, -11]
     ];
-    treeCoords.forEach(([tx, tz]) => addStylizedTree(tx, tz, 0.85 + Math.random() * 0.25));
+    treePositions.forEach(([tx, tz]) => addAvenueTree(tx, tz, 0.9 + Math.random() * 0.2));
 
-    // Street Lamps & Red Telephone Booths
-    const lampMat = new THREE.MeshStandardMaterial({ color: 0xeab308, metalness: 0.8 });
-    const boothMat = new THREE.MeshStandardMaterial({ color: 0xdc2626 });
+    // GTA Street Lamps & Hydrants
+    const postMat = new THREE.MeshStandardMaterial({ color: 0x374151, metalness: 0.8 });
+    const lampGlowMat = new THREE.MeshBasicMaterial({ color: 0xfff2a3 });
 
-    const addStreetProps = (px: number, pz: number) => {
-      // Lamp Post
-      const post = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.1, 3.2, 8), lampMat);
-      post.position.set(px, 1.6, pz);
+    const addGtaStreetLamp = (lx: number, lz: number) => {
+      const g = new THREE.Group();
+      g.position.set(lx, 0, lz);
+
+      const post = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.14, 3.8, 8), postMat);
+      post.position.y = 1.9;
       post.castShadow = true;
-      cityGroup.add(post);
+      g.add(post);
 
-      const lampHead = new THREE.Mesh(new THREE.SphereGeometry(0.3, 12, 12), new THREE.MeshBasicMaterial({ color: 0xfff4cc }));
-      lampHead.position.set(px, 3.3, pz);
-      cityGroup.add(lampHead);
+      const arm = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.08, 0.08), postMat);
+      arm.position.set(lx > 0 ? -0.4 : 0.4, 3.8, 0);
+      g.add(arm);
+
+      const lightHead = new THREE.Mesh(new THREE.SphereGeometry(0.22, 12, 12), lampGlowMat);
+      lightHead.position.set(lx > 0 ? -0.7 : 0.7, 3.75, 0);
+      g.add(lightHead);
+
+      cityGroup.add(g);
     };
 
-    addStreetProps(9.5, 4);
-    addStreetProps(-9.5, 4);
-    addStreetProps(9.5, -4);
-    addStreetProps(-9.5, -4);
+    addGtaStreetLamp(10.8, 6);
+    addGtaStreetLamp(-10.8, 6);
+    addGtaStreetLamp(10.8, -6);
+    addGtaStreetLamp(-10.8, -6);
 
-    // --- 3. Construct Stylized Buildings for Districts ---
+    // --- 3. GTA Developer-Grade Iconic Skyscrapers ---
     const districtMeshes: THREE.Group[] = [];
 
-    // SECTOR 1: Central Quality Capitol (Orange Dome with White Greek Columns) - Exactly like user image!
-    const createCentralCapitol = (dist: CityDistrict) => {
+    // TOWER 1: Maze Bank / Urban Quality Tower (Stepped Cylindrical Icon with Helipad & Spire)
+    const buildUrbanQualityTower = (dist: CityDistrict) => {
+      const g = new THREE.Group();
+      g.position.set(dist.position[0], 0, dist.position[2]);
+      g.userData = { id: dist.id, district: dist };
+
+      const glassMat = new THREE.MeshStandardMaterial({ color: 0x1e3a8a, metalness: 0.85, roughness: 0.2 });
+      const whiteMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 });
+      const goldTrim = new THREE.MeshStandardMaterial({ color: 0xff9a3c, metalness: 0.8 });
+
+      // Lower Rotunda Podium
+      const podium = new THREE.Mesh(new THREE.CylinderGeometry(5.2, 5.6, 3.5, 32), whiteMat);
+      podium.position.y = 1.75;
+      podium.castShadow = true;
+      g.add(podium);
+
+      // Main Soaring Tower Shaft
+      const shaft = new THREE.Mesh(new THREE.CylinderGeometry(4.2, 4.6, 9.5, 32), glassMat);
+      shaft.position.y = 3.5 + 4.75;
+      shaft.castShadow = true;
+      g.add(shaft);
+
+      // Stepped Executive Penthouse Level
+      const penthouse = new THREE.Mesh(new THREE.CylinderGeometry(3.2, 3.8, 4.0, 32), whiteMat);
+      penthouse.position.y = 3.5 + 9.5 + 2.0;
+      penthouse.castShadow = true;
+      g.add(penthouse);
+
+      // Helipad on Rooftop
+      const helipad = new THREE.Mesh(new THREE.CylinderGeometry(2.6, 2.6, 0.4, 32), new THREE.MeshStandardMaterial({ color: 0x334155 }));
+      helipad.position.y = 3.5 + 9.5 + 4.0 + 0.2;
+      g.add(helipad);
+
+      const hRing = new THREE.Mesh(new THREE.RingGeometry(1.2, 1.5, 32), new THREE.MeshBasicMaterial({ color: 0xff9a3c, side: THREE.DoubleSide }));
+      hRing.rotation.x = Math.PI / 2;
+      hRing.position.y = 3.5 + 9.5 + 4.0 + 0.42;
+      g.add(hRing);
+
+      // GTA Maze Bank Antenna Mast with Obstruction Light
+      const antenna = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.18, 5.5, 8), new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.9 }));
+      antenna.position.y = 3.5 + 9.5 + 4.0 + 2.75;
+      g.add(antenna);
+
+      const topLight = new THREE.PointLight(0xff9a3c, 4.5, 18);
+      topLight.position.y = 3.5 + 9.5 + 4.0 + 5.5;
+      g.add(topLight);
+
+      cityGroup.add(g);
+      districtMeshes.push(g);
+    };
+
+    // TOWER 2: Elexoplus Twin Towers with Suspended Skybridge
+    const buildElexoplusTwinTowers = (dist: CityDistrict) => {
+      const g = new THREE.Group();
+      g.position.set(dist.position[0], 0, dist.position[2]);
+      g.userData = { id: dist.id, district: dist };
+
+      const cyanGlass = new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.8, roughness: 0.2 });
+      const titanMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.4 });
+
+      // Tower A (D2C Wing)
+      const towerA = new THREE.Mesh(new THREE.BoxGeometry(3.6, 14, 3.6), cyanGlass);
+      towerA.position.set(-2.8, 7, 0);
+      towerA.castShadow = true;
+      g.add(towerA);
+
+      // Tower B (B2B Wing)
+      const towerB = new THREE.Mesh(new THREE.BoxGeometry(3.6, 12, 3.6), cyanGlass);
+      towerB.position.set(2.8, 6, 0);
+      towerB.castShadow = true;
+      g.add(towerB);
+
+      // Suspended Glass Skybridge connecting Twin Towers mid-air
+      const skybridge = new THREE.Mesh(new THREE.BoxGeometry(3.6, 1.4, 2.0), titanMat);
+      skybridge.position.set(0, 8.5, 0);
+      skybridge.castShadow = true;
+      g.add(skybridge);
+
+      // Crown Bevels
+      const crownA = new THREE.Mesh(new THREE.ConeGeometry(2.4, 2.5, 4), new THREE.MeshStandardMaterial({ color: 0x06b6d4 }));
+      crownA.rotation.y = Math.PI / 4;
+      crownA.position.set(-2.8, 14 + 1.25, 0);
+      g.add(crownA);
+
+      cityGroup.add(g);
+      districtMeshes.push(g);
+    };
+
+    // TOWER 3: FIB / Neural AI Research Spire
+    const buildNeuralLabsSpire = (dist: CityDistrict) => {
+      const g = new THREE.Group();
+      g.position.set(dist.position[0], 0, dist.position[2]);
+      g.userData = { id: dist.id, district: dist };
+
+      const darkSpireMat = new THREE.MeshStandardMaterial({ color: 0x022c22, metalness: 0.85, roughness: 0.3 });
+      const emeraldGlow = new THREE.MeshBasicMaterial({ color: 0x10b981 });
+
+      // Stepped Angular Research Block
+      const lower = new THREE.Mesh(new THREE.BoxGeometry(7, 6, 7), darkSpireMat);
+      lower.position.y = 3;
+      lower.castShadow = true;
+      g.add(lower);
+
+      const upper = new THREE.Mesh(new THREE.CylinderGeometry(2.4, 3.2, 7, 8), darkSpireMat);
+      upper.position.y = 6 + 3.5;
+      upper.castShadow = true;
+      g.add(upper);
+
+      // Radome Satellite Sphere
+      const radome = new THREE.Mesh(new THREE.SphereGeometry(1.6, 16, 16), new THREE.MeshStandardMaterial({ color: 0xffffff }));
+      radome.position.set(1.5, 6 + 7 + 1.2, 0);
+      radome.castShadow = true;
+      g.add(radome);
+
+      // Green Laser Core Spire
+      const spire = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.2, 4.5, 8), emeraldGlow);
+      spire.position.set(-1.0, 6 + 7 + 2.25, 0);
+      g.add(spire);
+
+      cityGroup.add(g);
+      districtMeshes.push(g);
+    };
+
+    // TOWER 4: ConnectX Radio Broadcast & Telecom Array
+    const buildConnectXBroadcast = (dist: CityDistrict) => {
+      const g = new THREE.Group();
+      g.position.set(dist.position[0], 0, dist.position[2]);
+      g.userData = { id: dist.id, district: dist };
+
+      const goldMat = new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.8, roughness: 0.2 });
+      const redTowerMat = new THREE.MeshStandardMaterial({ color: 0xef4444 });
+
+      // Circular Rotunda Base
+      const rotunda = new THREE.Mesh(new THREE.CylinderGeometry(3.8, 4.2, 7.5, 24), goldMat);
+      rotunda.position.y = 3.75;
+      rotunda.castShadow = true;
+      g.add(rotunda);
+
+      // GTA Mount Chiliad-Style Lattice Broadcast Tower
+      const lattice = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 1.6, 8.5, 4), redTowerMat);
+      lattice.position.y = 7.5 + 4.25;
+      lattice.castShadow = true;
+      g.add(lattice);
+
+      // Giant Satellite Dish
+      const dish = new THREE.Mesh(new THREE.CylinderGeometry(1.8, 0.4, 0.6, 16), new THREE.MeshStandardMaterial({ color: 0xffffff }));
+      dish.rotation.x = Math.PI / 3;
+      dish.position.set(1.4, 7.5 + 2.5, 1.4);
+      g.add(dish);
+
+      cityGroup.add(g);
+      districtMeshes.push(g);
+    };
+
+    // TOWER 5: Rockford Academic Quad & Terracotta Dome (Matching Reference Image)
+    const buildAcademicQuad = (dist: CityDistrict) => {
       const g = new THREE.Group();
       g.position.set(dist.position[0], 0, dist.position[2]);
       g.userData = { id: dist.id, district: dist };
 
       const marbleMat = new THREE.MeshStandardMaterial({ color: 0xfafafa, roughness: 0.3 });
-      const columnMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2 });
-      const domeMat = new THREE.MeshStandardMaterial({ color: 0xe87a20, roughness: 0.4 }); // Terracotta Orange Dome
-      const glassMat = new THREE.MeshStandardMaterial({ color: 0x1d4ed8, metalness: 0.7, roughness: 0.2 });
-      const roofBlueMat = new THREE.MeshStandardMaterial({ color: 0x2563eb, roughness: 0.4 });
+      const domeMat = new THREE.MeshStandardMaterial({ color: 0xe87a20, roughness: 0.4 });
 
-      // Plinth Base with Steps
-      const base = new THREE.Mesh(new THREE.BoxGeometry(8.5, 0.8, 8.5), marbleMat);
-      base.position.y = 0.4;
-      base.castShadow = true;
-      base.receiveShadow = true;
-      g.add(base);
-
-      // Main Classical Hall Body
-      const hall = new THREE.Mesh(new THREE.BoxGeometry(7.2, 5.5, 7.2), marbleMat);
-      hall.position.y = 0.8 + 2.75;
+      const hall = new THREE.Mesh(new THREE.BoxGeometry(7.5, 5.5, 7.5), marbleMat);
+      hall.position.y = 2.75;
       hall.castShadow = true;
-      hall.receiveShadow = true;
       g.add(hall);
 
-      // Front Blue Glass Portal Entrance
-      const door = new THREE.Mesh(new THREE.BoxGeometry(2.4, 3.8, 0.4), glassMat);
-      door.position.set(0, 0.8 + 1.9, 3.65);
-      g.add(door);
-
-      // 6 Front Classical Columns
-      for (let c = -2.5; c <= 2.5; c += 1.25) {
-        const col = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.28, 5.5, 12), columnMat);
-        col.position.set(c, 0.8 + 2.75, 3.85);
+      for (let c = -2.6; c <= 2.6; c += 1.3) {
+        const col = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.28, 5.5, 12), marbleMat);
+        col.position.set(c, 2.75, 4.0);
         col.castShadow = true;
         g.add(col);
       }
 
-      // Classical Triangular Pediment Roof
-      const pediment = new THREE.Mesh(new THREE.ConeGeometry(5.4, 2.2, 4), marbleMat);
-      pediment.rotation.y = Math.PI / 4;
-      pediment.position.y = 0.8 + 5.5 + 1.1;
-      pediment.castShadow = true;
-      g.add(pediment);
-
-      // Grand Terracotta Orange Dome (Signature feature matching image!)
       const dome = new THREE.Mesh(new THREE.SphereGeometry(2.8, 24, 16, 0, Math.PI * 2, 0, Math.PI / 2), domeMat);
-      dome.position.y = 0.8 + 5.5 + 1.6;
+      dome.position.y = 5.5;
       dome.castShadow = true;
       g.add(dome);
 
-      // Lantern Cupola on Top of Dome
-      const cupola = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.8, 1.2, 12), marbleMat);
-      cupola.position.y = 0.8 + 5.5 + 1.6 + 2.8 + 0.6;
-      g.add(cupola);
-
-      const beaconLight = new THREE.PointLight(0xff9a3c, 3.5, 15);
-      beaconLight.position.y = 12;
-      g.add(beaconLight);
-
       cityGroup.add(g);
       districtMeshes.push(g);
     };
 
-    // SECTOR 2: Elexoplus Commercial Complex (Blue-roofed office with awnings)
-    const createCommercialComplex = (dist: CityDistrict) => {
+    // TOWER 6: Paleto Energy Substation & Power Ledger
+    const buildPowerSubstation = (dist: CityDistrict) => {
       const g = new THREE.Group();
       g.position.set(dist.position[0], 0, dist.position[2]);
       g.userData = { id: dist.id, district: dist };
 
-      const wallMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.4 });
-      const blueRoofMat = new THREE.MeshStandardMaterial({ color: 0x1e40af, roughness: 0.3 });
-      const winMat = new THREE.MeshStandardMaterial({ color: 0x60a5fa, metalness: 0.6 });
+      const industrial = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.7 });
+      const warningPink = new THREE.MeshStandardMaterial({ color: 0xec4899, roughness: 0.4 });
 
-      // Main Wing
-      const wing1 = new THREE.Mesh(new THREE.BoxGeometry(8, 6.5, 6), wallMat);
-      wing1.position.y = 3.25;
-      wing1.castShadow = true;
-      g.add(wing1);
+      const core = new THREE.Mesh(new THREE.BoxGeometry(8, 5, 7), industrial);
+      core.position.y = 2.5;
+      core.castShadow = true;
+      g.add(core);
 
-      // Blue Mansard Roof
-      const roof = new THREE.Mesh(new THREE.BoxGeometry(8.4, 1.8, 6.4), blueRoofMat);
-      roof.position.y = 6.5 + 0.9;
-      roof.castShadow = true;
-      g.add(roof);
-
-      // Windows Array
-      for (let f = 1; f <= 2; f++) {
-        for (let w = -2.6; w <= 2.6; w += 1.6) {
-          const win = new THREE.Mesh(new THREE.PlaneGeometry(1.0, 1.4), winMat);
-          win.position.set(w, f * 2.2, 3.05);
-          g.add(win);
-        }
-      }
+      const stack = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 1.2, 5.5, 16), warningPink);
+      stack.position.set(2, 5 + 2.75, 0);
+      stack.castShadow = true;
+      g.add(stack);
 
       cityGroup.add(g);
       districtMeshes.push(g);
     };
 
-    // SECTOR 3: Neural Labs Helipad Building (Red-and-white flat-roof with helipad from image)
-    const createHelipadBuilding = (dist: CityDistrict) => {
-      const g = new THREE.Group();
-      g.position.set(dist.position[0], 0, dist.position[2]);
-      g.userData = { id: dist.id, district: dist };
+    buildUrbanQualityTower(DISTRICTS[0]);
+    buildElexoplusTwinTowers(DISTRICTS[1]);
+    buildNeuralLabsSpire(DISTRICTS[2]);
+    buildConnectXBroadcast(DISTRICTS[3]);
+    buildAcademicQuad(DISTRICTS[4]);
+    buildPowerSubstation(DISTRICTS[5]);
 
-      const whiteWall = new THREE.MeshStandardMaterial({ color: 0xf5f5f5, roughness: 0.3 });
-      const redTrim = new THREE.MeshStandardMaterial({ color: 0xdc2626, roughness: 0.4 });
-      const padMat = new THREE.MeshStandardMaterial({ color: 0x334155 });
+    // --- 4. GTA Style Fleet of Sports Cars with Lit Headlights ---
+    const carMatYellow = new THREE.MeshStandardMaterial({ color: 0xfacc15, roughness: 0.3 }); // Taxi
+    const carMatRed = new THREE.MeshStandardMaterial({ color: 0xdc2626, roughness: 0.3 });    // Sports Car
+    const carMatBlack = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.2 });  // Executive Sedan
+    const headlightMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const taillightMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
 
-      // Main 2-story Tech Block
-      const block = new THREE.Mesh(new THREE.BoxGeometry(8, 6, 7), whiteWall);
-      block.position.y = 3;
-      block.castShadow = true;
-      g.add(block);
-
-      // Red Parapet Trim
-      const trim = new THREE.Mesh(new THREE.BoxGeometry(8.2, 0.8, 7.2), redTrim);
-      trim.position.y = 6.4;
-      g.add(trim);
-
-      // Octagonal Helipad on Roof (Matching image!)
-      const pad = new THREE.Mesh(new THREE.CylinderGeometry(2.6, 2.6, 0.3, 8), padMat);
-      pad.position.y = 6.9;
-      g.add(pad);
-
-      // Yellow/Amber 'H' Ring on Helipad
-      const hRing = new THREE.Mesh(new THREE.RingGeometry(1.4, 1.7, 8), new THREE.MeshBasicMaterial({ color: 0xeab308, side: THREE.DoubleSide }));
-      hRing.rotation.x = Math.PI / 2;
-      hRing.position.y = 7.06;
-      g.add(hRing);
-
-      cityGroup.add(g);
-      districtMeshes.push(g);
-    };
-
-    // SECTOR 4: ConnectX Golden Curved Rotunda (Circular golden glass building from image)
-    const createGoldenRotunda = (dist: CityDistrict) => {
-      const g = new THREE.Group();
-      g.position.set(dist.position[0], 0, dist.position[2]);
-      g.userData = { id: dist.id, district: dist };
-
-      const goldGlass = new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.8, roughness: 0.2 });
-      const frameGold = new THREE.MeshStandardMaterial({ color: 0xb45309, metalness: 0.9 });
-
-      // Curved Rotunda Tower
-      const rotunda = new THREE.Mesh(new THREE.CylinderGeometry(3.6, 3.6, 7.5, 24), goldGlass);
-      rotunda.position.y = 3.75;
-      rotunda.castShadow = true;
-      g.add(rotunda);
-
-      // Roof Disc Crown
-      const disc = new THREE.Mesh(new THREE.CylinderGeometry(4.2, 4.2, 0.6, 24), frameGold);
-      disc.position.y = 7.8;
-      disc.castShadow = true;
-      g.add(disc);
-
-      cityGroup.add(g);
-      districtMeshes.push(g);
-    };
-
-    // SECTOR 5: Academic Pavilion
-    const createAcademicPavilion = (dist: CityDistrict) => {
-      const g = new THREE.Group();
-      g.position.set(dist.position[0], 0, dist.position[2]);
-      g.userData = { id: dist.id, district: dist };
-
-      const mat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, roughness: 0.3 });
-      const bld = new THREE.Mesh(new THREE.BoxGeometry(7, 5.5, 7), new THREE.MeshStandardMaterial({ color: 0xffffff }));
-      bld.position.y = 2.75;
-      bld.castShadow = true;
-      g.add(bld);
-
-      const roof = new THREE.Mesh(new THREE.ConeGeometry(5.2, 2.5, 4), mat);
-      roof.rotation.y = Math.PI / 4;
-      roof.position.y = 5.5 + 1.25;
-      g.add(roof);
-
-      cityGroup.add(g);
-      districtMeshes.push(g);
-    };
-
-    // SECTOR 6: Gola Foundry Pavilion
-    const createFoundryPavilion = (dist: CityDistrict) => {
-      const g = new THREE.Group();
-      g.position.set(dist.position[0], 0, dist.position[2]);
-      g.userData = { id: dist.id, district: dist };
-
-      const mat = new THREE.MeshStandardMaterial({ color: 0xec4899, roughness: 0.4 });
-      const bld = new THREE.Mesh(new THREE.BoxGeometry(7.5, 5.5, 6.5), new THREE.MeshStandardMaterial({ color: 0x1e293b }));
-      bld.position.y = 2.75;
-      bld.castShadow = true;
-      g.add(bld);
-
-      const trim = new THREE.Mesh(new THREE.BoxGeometry(8, 0.8, 7), mat);
-      trim.position.y = 5.9;
-      g.add(trim);
-
-      cityGroup.add(g);
-      districtMeshes.push(g);
-    };
-
-    // Build all 6 districts
-    createCentralCapitol(DISTRICTS[0]);
-    createCommercialComplex(DISTRICTS[1]);
-    createHelipadBuilding(DISTRICTS[2]);
-    createGoldenRotunda(DISTRICTS[3]);
-    createAcademicPavilion(DISTRICTS[4]);
-    createFoundryPavilion(DISTRICTS[5]);
-
-    // --- 4. Moving Stylized Vehicles on Roads ---
-    const carMatYellow = new THREE.MeshStandardMaterial({ color: 0xfacc15, roughness: 0.4 });
-    const carMatRed = new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.4 });
-    const carMatBlue = new THREE.MeshStandardMaterial({ color: 0x3b82f6, roughness: 0.4 });
-
-    const createCar = (mat: THREE.Material) => {
+    const createGtaCar = (bodyMat: THREE.Material) => {
       const car = new THREE.Group();
-      const body = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.7, 3.2), mat);
-      body.position.y = 0.55;
-      body.castShadow = true;
-      car.add(body);
 
-      const cabin = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.6, 1.6), new THREE.MeshStandardMaterial({ color: 0x1e293b }));
-      cabin.position.set(0, 1.1, -0.2);
+      const chassis = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.65, 3.2), bodyMat);
+      chassis.position.y = 0.5;
+      chassis.castShadow = true;
+      car.add(chassis);
+
+      const cabin = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.55, 1.7), new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.2 }));
+      cabin.position.set(0, 1.0, -0.2);
       car.add(cabin);
+
+      // Glowing Headlights
+      const hlL = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.15, 0.1), headlightMat);
+      hlL.position.set(0.5, 0.55, 1.62);
+      car.add(hlL);
+
+      const hlR = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.15, 0.1), headlightMat);
+      hlR.position.set(-0.5, 0.55, 1.62);
+      car.add(hlR);
+
+      // Glowing Red Taillights
+      const tlL = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.15, 0.1), taillightMat);
+      tlL.position.set(0.5, 0.55, -1.62);
+      car.add(tlL);
+
+      const tlR = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.15, 0.1), taillightMat);
+      tlR.position.set(-0.5, 0.55, -1.62);
+      car.add(tlR);
 
       return car;
     };
 
-    const cars: { group: THREE.Group; speed: number; direction: number; isNS: boolean }[] = [];
+    const gtaTraffic: { group: THREE.Group; speed: number; direction: number; isNS: boolean }[] = [];
 
-    for (let c = 0; c < 6; c++) {
-      const mat = c % 3 === 0 ? carMatYellow : c % 3 === 1 ? carMatRed : carMatBlue;
-      const car = createCar(mat);
+    for (let c = 0; c < 8; c++) {
+      const mat = c % 3 === 0 ? carMatYellow : c % 3 === 1 ? carMatRed : carMatBlack;
+      const car = createGtaCar(mat);
       const isNS = c % 2 === 0;
+
       if (isNS) {
-        car.position.set(c % 4 === 0 ? 3.5 : -3.5, 0, (Math.random() - 0.5) * 60);
+        car.position.set(c % 4 === 0 ? 4.2 : -4.2, 0, (Math.random() - 0.5) * 80);
       } else {
         car.rotation.y = Math.PI / 2;
-        car.position.set((Math.random() - 0.5) * 60, 0, c % 3 === 0 ? 3.5 : -3.5);
+        car.position.set((Math.random() - 0.5) * 80, 0, c % 4 === 0 ? 4.2 : -4.2);
       }
       cityGroup.add(car);
-      cars.push({
+      gtaTraffic.push({
         group: car,
-        speed: 0.16 + Math.random() * 0.12,
+        speed: 0.18 + Math.random() * 0.14,
         direction: Math.random() > 0.5 ? 1 : -1,
         isNS
       });
@@ -694,20 +729,17 @@ export const MetaverseCityAdventure: React.FC = () => {
         mapMesh.receiveShadow = true;
         indiaMapGroup.add(mapMesh);
 
-        // 3D Beacons for Delhi, Dehradun, Gola
         const addMapBeacon = (pos: [number, number, number], hex: number) => {
           const bGroup = new THREE.Group();
           bGroup.position.set(pos[0], pos[1], pos[2]);
 
           const poleGeo = new THREE.CylinderGeometry(0.08, 0.08, 6.5, 8);
-          const poleMat = new THREE.MeshBasicMaterial({ color: hex });
-          const pole = new THREE.Mesh(poleGeo, poleMat);
+          const pole = new THREE.Mesh(poleGeo, new THREE.MeshBasicMaterial({ color: hex }));
           pole.position.y = 3.25;
           bGroup.add(pole);
 
           const ringGeo = new THREE.RingGeometry(0.35, 0.7, 16);
-          const ringMat = new THREE.MeshBasicMaterial({ color: hex, side: THREE.DoubleSide });
-          const ring = new THREE.Mesh(ringGeo, ringMat);
+          const ring = new THREE.Mesh(ringGeo, new THREE.MeshBasicMaterial({ color: hex, side: THREE.DoubleSide }));
           ring.rotation.x = Math.PI / 2;
           ring.position.y = 0.1;
           bGroup.add(ring);
@@ -727,7 +759,7 @@ export const MetaverseCityAdventure: React.FC = () => {
       (err) => console.warn('3D India Map asset warning:', err)
     );
 
-    // --- Interactive Raycaster & Smooth Orbit Drag Controls ---
+    // --- Interactive Orbit Drag & Raycaster ---
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
     let isDragging = false;
@@ -751,7 +783,7 @@ export const MetaverseCityAdventure: React.FC = () => {
 
       cityGroup.rotation.y += dx * 0.006;
       if (viewMode === 'city') {
-        cameraTargetPos.current.y = Math.max(8, Math.min(28, cameraTargetPos.current.y - dy * 0.05));
+        cameraTargetPos.current.y = Math.max(8, Math.min(30, cameraTargetPos.current.y - dy * 0.05));
       }
     };
 
@@ -782,7 +814,6 @@ export const MetaverseCityAdventure: React.FC = () => {
     window.addEventListener('pointermove', onPointerMove);
     window.addEventListener('pointerup', onPointerUp);
 
-    // --- Handle Resize ---
     const handleResize = () => {
       if (!container) return;
       const newW = container.clientWidth || window.innerWidth;
@@ -802,7 +833,6 @@ export const MetaverseCityAdventure: React.FC = () => {
       const delta = clock.getDelta();
       const elapsed = clock.getElapsedTime();
 
-      // Display toggle
       if (viewMode === 'city') {
         cityGroup.visible = true;
         indiaMapGroup.visible = false;
@@ -812,7 +842,6 @@ export const MetaverseCityAdventure: React.FC = () => {
         indiaMapGroup.rotation.y = Math.sin(elapsed * 0.2) * 0.12;
       }
 
-      // Autopilot Story Tour
       if (isTourPlaying && viewMode === 'city') {
         tourTimerRef.current += delta;
         if (tourTimerRef.current > 7.5) {
@@ -821,12 +850,11 @@ export const MetaverseCityAdventure: React.FC = () => {
           const nextDist = DISTRICTS[tourIndexRef.current];
           setActiveDistrict(nextDist);
           const [nx, ny, nz] = nextDist.position;
-          cameraTargetPos.current.set(nx + 10, ny + nextDist.buildingHeight * 0.8 + 6, nz + 15);
+          cameraTargetPos.current.set(nx + 11, ny + nextDist.buildingHeight * 0.75 + 6, nz + 16);
           cameraLookAtPos.current.set(nx, ny + nextDist.buildingHeight * 0.45, nz);
         }
       }
 
-      // Smooth Camera Interpolation
       if (viewMode === 'city') {
         camera.position.lerp(cameraTargetPos.current, 0.045);
         camera.lookAt(cameraLookAtPos.current);
@@ -835,16 +863,16 @@ export const MetaverseCityAdventure: React.FC = () => {
         camera.lookAt(0, 3, 0);
       }
 
-      // Move Cars on Roads
-      cars.forEach((car) => {
+      // Move GTA Traffic
+      gtaTraffic.forEach((car) => {
         if (car.isNS) {
           car.group.position.z += car.speed * car.direction;
-          if (car.group.position.z > 50) car.group.position.z = -50;
-          if (car.group.position.z < -50) car.group.position.z = 50;
+          if (car.group.position.z > 65) car.group.position.z = -65;
+          if (car.group.position.z < -65) car.group.position.z = 65;
         } else {
           car.group.position.x += car.speed * car.direction;
-          if (car.group.position.x > 50) car.group.position.x = -50;
-          if (car.group.position.x < -50) car.group.position.x = 50;
+          if (car.group.position.x > 65) car.group.position.x = -65;
+          if (car.group.position.x < -65) car.group.position.x = 65;
         }
       });
 
@@ -868,10 +896,10 @@ export const MetaverseCityAdventure: React.FC = () => {
       {/* 3D WebGL Canvas Viewport */}
       <div ref={mountRef} className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing" />
 
-      {/* Top HUD: Metaverse Adventure Game Interface */}
+      {/* Top HUD: GTA Adventure Interface */}
       <div className="absolute top-4 left-4 right-4 z-20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pointer-events-none">
         
-        {/* Active Quest Tracker */}
+        {/* Active Quest / Target Landmark */}
         <div className="pointer-events-auto bg-[#120e0a]/95 backdrop-blur-md border border-white/15 px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3.5 max-w-lg">
           <div className="w-10 h-10 rounded-lg bg-[#ff9a3c]/15 border border-[#ff9a3c]/40 flex items-center justify-center shrink-0">
             <Building2 className="w-5 h-5 text-[#ff9a3c]" />
