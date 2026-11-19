@@ -1,158 +1,336 @@
-# Sajal Saxena — Interactive Portfolio 
-
-> **Full-Stack Software Engineer · Business Development Associate at Urban Company · Certified Generative AI Professional**
-
-[![Vite](https://img.shields.io/badge/Vite-8.3-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
-[![React](https://img.shields.io/badge/React-19.0-61DAFB?logo=react&logoColor=black)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-7.0-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![Three.js](https://img.shields.io/badge/Three.js-WebGL-black?logo=three.js)](https://threejs.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![GitHub Actions](https://img.shields.io/badge/CI%2FCD-GitHub_Pages-2088FF?logo=github-actions&logoColor=white)](https://github.com/)
-
-A high-performance interactive 3D portfolio and engineering portfolio built with **React 19**, **Three.js**, **TypeScript**, and **Tailwind CSS**. Built with architectural typography, real-time WebGL parallax, responsive 3D micro-motion cards, and a dedicated Portfolio Intelligence console.
-
----
-
-## 🌟 Key Highlights & Engineering Features
-
-### 1. Interactive 3D Centerpiece & Portrait Processing
-- **Three.js Scene Architecture**: Real-time WebGL rendering with custom physical-based lighting, soft circular drop-shadow, dynamic particle dust field, and interactive mouse-driven Euler gimbal rotation.
-- **Client-Side Background Segmentation**: High-precision edge-seeded flood fill, chromatic distance thresholding, and smoothstep alpha feathering directly in an offscreen HTML5 canvas to isolate portraits with zero backend latency.
-
-### 2. Centered Kinetic 3D Typography
-- Prominent **SAJAL SAXENA** monolithic architectural header centered directly in the hero stage.
-- Multi-layer `preserve-3d` spatial depth with individual letter elevation, smooth exponential damping (`lerp`), and dynamic specular drop-shadows that track cursor movement.
-
-### 3. 3D Micro-Motion UI Across All Sections
-- Reusable `MotionCard3D` wrapper providing responsive tilt, specular glint reflection, and depth elevation on hover for all cards across:
-  - **Projects**: Elexoplus ERP, ConnectX WebRTC, Plant Leaf Disease CNN, Electricity Ledger.
-  - **Experience**: Urban Company SBC Quality Team, themrgamer.com, Feynn Labs, CollegeDesire.
-  - **Skills & Certifications**: Oracle Cloud Infrastructure 2025 GenAI Professional, HackerRank, Infosys Java, TCS ESG.
-  - **Education**: B.Tech CSE (Dev Bhoomi Uttarakhand University), NEP Saarthi Ambassador.
-  - **Contact**: Direct communication console and coordinates.
-
-### 4. Portfolio Copilot (Intelligence Console)
-- Built-in instant response terminal that answers queries regarding Sajal's work experience, project technical stacks, SLA metrics, and contact info.
-- Formatted output cards with category indicators, tech badges, and one-click quick jump actions.
-
-### 5. Direct Mail & Communication Flow
-- 1-click **Direct Email** that automatically opens the user's default desktop/mobile mail app (Apple Mail, Outlook, Thunderbird, iOS Mail, Android Gmail) with pre-filled topics.
-- Web Gmail fallback trigger to compose in the browser.
-- Direct links to **LinkedIn Profile** (`/in/sajal-saxena-cse/`) and verified **Resume PDF** download.
-
----
-
-## 📂 Project Architecture
+<div align="center">
 
 ```
+  ███████╗ █████╗      ██╗ █████╗ ██╗         ███████╗ █████╗ ██╗  ██╗███████╗███╗   ██╗ █████╗ 
+  ██╔════╝██╔══██╗     ██║██╔══██╗██║         ██╔════╝██╔══██╗╚██╗██╔╝██╔════╝████╗  ██║██╔══██╗
+  ███████╗███████║     ██║███████║██║         ███████╗███████║ ╚███╔╝ █████╗  ██╔██╗ ██║███████║
+  ╚════██║██╔══██║██   ██║██╔══██║██║         ╚════██║██╔══██║ ██╔██╗ ██╔══╝  ██║╚██╗██║██╔══██║
+  ███████║██║  ██║╚█████╔╝██║  ██║███████╗    ███████║██║  ██║██╔╝ ██╗███████╗██║ ╚████║██║  ██║
+  ╚══════╝╚═╝  ╚═╝ ╚════╝ ╚═╝  ╚═╝╚══════╝    ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═══╝╚═╝  ╚═╝
+```
+
+### 🌌 METAVERSE PORTFOLIO ENGINE · SPATIAL WEB EXPERIENCE v3.0
+**Full-Stack Software Engineer · Central SBC Quality at Urban Company · Certified Generative AI Professional**
+
+[![Live Experience](https://img.shields.io/badge/LIVE_METAVERSE_NODE-VISIT_PORTFOLIO-00F2FE?style=for-the-badge&logo=google-chrome&logoColor=black)](https://saxenasajal03.github.io/Portfolio/)
+[![Portfolio Repo](https://img.shields.io/badge/GITHUB_SOURCE-Portfolio-61DAFB?style=for-the-badge&logo=github&logoColor=black)](https://github.com/saxenasajal03/Portfolio)
+[![Oracle Certified](https://img.shields.io/badge/OCI-GenAI_2025_Certified-F80000?style=for-the-badge&logo=oracle&logoColor=white)](https://www.oracle.com/)
+[![LinkedIn](https://img.shields.io/badge/CONNECT-LinkedIn_Profile-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/sajal-saxena-cse/)
+
+```ini
+[ METAVERSE TRANSMISSION ACTIVE ]
+Coordinates: 28.4986° N, 77.1558° E [New Delhi Node] ⇄ 80.4706° E [UP Base]
+Spatial Engine: Three.js WebGL Core v19 · Kinetic 3D Letterforms · 60 FPS Exponential Damping
+SLA Resolution: Tier 1/2 Escalations · Real-Time Attendance >80% · OCI Generative AI
+```
+
+---
+
+<p align="center">
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=18&duration=2500&pause=1000&color=00F2FE&center=true&vCenter=true&multiline=true&width=750&height=70&lines=Full-Stack+Engineer+%7C+Urban+Company+Central+SBC+Quality;Oracle+Cloud+Certified+Generative+AI+Professional+(2025);Interactive+Three.js+WebGL+Metaverse+%7C+Spatial+Computing+Architect" alt="Typing SVG" />
+</p>
+
+</div>
+
+---
+
+## 🔮 Spatial Web Architecture (The Metaverse Engine)
+
+This is not a traditional flat portfolio. It is an **interactive spatial computing canvas** engineered with **React 19**, **Three.js**, **TypeScript 7**, and **Tailwind CSS v4**, delivering zero-compromise 60 FPS WebGL rendering and procedural audio synthesis.
+
+```
+       ┌────────────────────────────────────────────────────────┐
+       │                METAVERSE VIEWPORT (CANVAS)             │
+       ├────────────────────────────────────────────────────────┤
+       │  [ Ambient Dynamic Particles ]  [ Custom Euler Gimbal ]│
+       │  [ Dynamic Point Lighting ]     [ Studio Drop Shadow ] │
+       │  [ Client-Side Edge Alpha ]     [ 3D Parallax Tilt ]   │
+       └───────────────────────────┬────────────────────────────┘
+                                   │
+      ┌────────────────────────────┼────────────────────────────┐
+      ▼                            ▼                            ▼
+┌──────────────┐          ┌──────────────────┐          ┌──────────────┐
+│  KINETIC 3D  │          │  SMART COPILOT   │          │  WEB AUDIO   │
+│  TYPOGRAPHY  │          │  NEURAL TERMINAL │          │  SYNTHESIS   │
+│ Monolithic   │          │ Instant Querying │          │ Procedural   │
+│ Spatial Depth│          │ SLA / Stack Tele │          │ Zero MP3 I/O │
+└──────────────┘          └──────────────────┘          └──────────────┘
+```
+
+---
+
+## ⚡ Core Engineering Innovations
+
+### 1. 🌌 Three.js WebGL Viewport & Dynamic Lighting
+- **Gimbal & Parallax Tracking**: Mouse-driven Euler gimbal rotation with calibrated exponential damping (`lerp(current, target, 0.08)`), reacting in real-time to pointer trajectories across 3 axes.
+- **Micro-Particle Dust Field**: 400+ procedural float particles rendered via custom geometry buffers with sinusoidal drift simulation.
+- **Dynamic Specular Light Sources**: Multi-point directional key & fill lights creating hyper-realistic highlights across the 3D canvas and portrait centerpiece.
+
+### 2. 🧬 Client-Side Zero-Latency Background Segmentation
+- Integrated edge-seeded flood-fill and Euclidean chromatic distance thresholding on an offscreen HTML5 2D canvas context.
+- Smoothstep alpha feathering applied on the client browser with **zero backend dependencies**, yielding instant studio-grade portrait isolation at 0 ms round-trip time.
+
+### 3. 🏛️ Monolithic Kinetic 3D Typography
+- The **SAJAL SAXENA** architectural centerpiece is engineered using CSS 3D `preserve-3d` matrix transforms.
+- Each individual glyph calculates real-time cursor distance to produce kinetic letter elevation, dynamic specular glare, and cursor-tracked multi-layer drop shadows.
+
+### 4. 🎛️ Procedural Web Audio API Soundscape
+- **Zero MP3 Assets**: All auditory feedback (clicks, card glints, terminal output, and spatial shifts) is synthesized mathematically at runtime using the native Web Audio API with resonant bandpass oscillators and custom ADSR gain envelopes.
+
+### 5. 🤖 Portfolio Intelligence Terminal (Copilot)
+- On-demand AI CLI interface embedded directly into the spatial hub.
+- Answers real-time queries about Sajal's tech stack, operational SLA metrics at Urban Company, project architectures, and contact pipelines.
+
+---
+
+## 🗺️ Physical Coordinates to Metaverse Nodes (Official Map of India)
+
+Sajal's professional and academic journey spans pivotal technology and operations nodes across India:
+
+<div align="center">
+
+```
+                           ╔═════════════════════════════════════════╗
+                           ║     REPUBLIC OF INDIA TELEMETRY HUB     ║
+                           ╚═════════════════════════════════════════╝
+
+                                        ▲ JAMMU & KASHMIR / LADAKH
+                                       / \ [Sovereign Indian Territory]
+                                      /   \
+                                     /     \
+    [DEHRADUN TECH NODE] ───►       *  DEHRADUN (30.3165° N, 78.0322° E)
+    B.Tech Computer Science CSE     │  • Dev Bhoomi Uttarakhand Univ.
+    UGC NEP Saarthi Ambassador      │  • Lakshagriha Hackathon Finalist
+                                    │
+    [NEW DELHI HQ NODE] ────►       *  NEW DELHI / GHITORNI (28.4986° N, 77.1558° E)
+    Central SBC Quality Team        │  • Urban Company Headquarters
+    SLA & Escalation Analytics      │  • Jarvis SQL & Real-Time Attendance
+                                    │
+    [UTTAR PRADESH BASE] ───►       *  GOLA GOKARANNATH (28.0824° N, 80.4706° E)
+    Root Coordinates (PIN: 262802)  │  • Origin Node / Children's Academy
+                                    │  • Full-Stack Development Forge
+                                   / \
+                                  /   \    ARUNACHAL PRADESH [East Node] ►
+                                 /     \
+                                /       \
+                               /         \
+                              /           \
+                             *-------------*
+                             \             /
+                              \           /
+                               \         /
+                                \   *   /  BAY OF BENGAL
+                                 \ / \ /   ANDAMAN & NICOBAR ISLANDS ►
+                                  *   *
+                                  INDIAN OCEAN
+```
+
+</div>
+
+| Telemetry Hub | Geo Coordinates | Operational Role & Academic Milestone |
+|:---|:---|:---|
+| 🏢 **New Delhi (Ghitorni)** | `28.4986° N, 77.1558° E` | **Business Development Associate** — Urban Company Central SBC Quality. Root-cause analysis, SLA compliance, Jarvis analytics, Partner upgrade pipelines. |
+| 🎓 **Dehradun (Uttarakhand)** | `30.3165° N, 78.0322° E` | **B.Tech in Computer Science & Engineering** (2021–2025) — Dev Bhoomi Uttarakhand University. UGC-appointed NEP Saarthi Ambassador. |
+| 🏡 **Gola Gokarannath (UP)** | `28.0824° N, 80.4706° E` | **Origin Base (PIN: 262802)** — High School (PCM & Science) at Children's Academy Sr. Sec. School. The foundry of full-stack engineering. |
+
+---
+
+## 💼 Operational & Engineering Experience
+
+```
+2024                      2025                      2026                      PRESENT
+ ├── [CollegeDesire] ──────┼── [themrgamer.com] ─────┼── [Urban Company] ───────► (Active)
+ │   Web Dev & SEO         │   Full-Stack Gaming     │   Central SBC Quality
+ └── [Feynn Labs] ─────────┘                         └── OCI GenAI Certified
+     AI/ML Data Pipelines
+```
+
+### 🏢 **Urban Company** · Central SBC Quality Team
+*Business Development Associate · Ghitorni, New Delhi* `[Apr 2026 – Present]`
+- **Tier 1 & 2 Escalation Resolution**: Engineered systematic root-cause analysis (RCA) frameworks to resolve complex partner escalations and operational bottlenecks.
+- **Jarvis & SQL Analytics**: Deployed high-throughput SQL telemetry queries and advanced Excel modeling to track partner Service-Level Agreements (SLAs) and quality metrics.
+- **Real-Time Attendance (RT)**: Governed cohort operational performance to maintain compliance exceeding **80% RT thresholds**.
+- **AI Handholding Pilot**: Spearheaded cross-functional process improvements for partner onboarding, upgrades, and automated AI assistance workflows.
+
+### 🎮 **themrgamer.com**
+*Web Developer (Contract) · Remote* `[Jan 2025 – Mar 2025]`
+- Architected online gaming modules using **React.js**, **PHP 8**, **MySQL**, and **cPanel**.
+- Optimized relational database structures and refactored API query logic, slashing response latency by **30%**.
+- Enforced automated functional test suites to ensure zero-downtime gaming stability.
+
+### 🧠 **Feynn Labs**
+*AI/ML Intern · Remote* `[Aug 2024 – Oct 2024]`
+- Built deep learning models with **Python**, **TensorFlow**, **NumPy**, and **Pandas**.
+- Engineered automated ETL data validation workflows, performing feature normalization and rigorous quality checks.
+
+### 🌐 **CollegeDesire**
+*Web Developer · Remote* `[Jan 2024 – Jun 2024]`
+- Programmed core web application modules in **React.js** and **PHP/MySQL**.
+- Supervised technical SEO schema improvements and query caching, driving a **+25% surge in organic search visibility**.
+
+---
+
+## 🚀 Flagship Metaverse & Web3/Web2 Projects
+
+<div align="center">
+
+| Project Node | Architecture & Stack | Key Metrics & Highlights | Terminal Link |
+|:---|:---|:---|:---:|
+| 🛒 **Elexoplus Commerce & ERP Suite** | React.js · Node.js · Express · MySQL | Unified D2C (`elexoplus.com`) + B2B Wholesale (`b2b.elexoplus.com`) ecosystem with role-based access control, inventory telemetry, and live order tracking. | [View Project](https://elexoplus.com) |
+| 📡 **ConnectX Real-Time Video & Chat** | React.js · Node.js · Socket.io · WebRTC · MongoDB | Low-latency WebRTC mesh peer-to-peer audio/video streaming with concurrent encrypted chat rooms and dynamic signaling servers. | [Launch Demo](https://github.com/saxenasajal03/Portfolio) |
+| 🌿 **Plant Leaf Disease CNN Classifier** | Python · TensorFlow/Keras · OpenCV · React.js | Deep Convolutional Neural Network trained on botanical disease datasets, achieving **>95% validation accuracy** with instant web inference. | [Inspect Model](https://github.com/saxenasajal03/Portfolio) |
+| ⚡ **Electricity Bill Management System** | Java Swing · SQL Server · JDBC · Stored Procedures | Enterprise desktop utility with multi-table relational schema joins, automated invoice calculation, and ACID-compliant transaction safety. | [Codebase](https://github.com/saxenasajal03/Portfolio) |
+
+</div>
+
+---
+
+## 🏆 Certifications, Honors & Achievements
+
+```
+ ╔═════════════════════════════════════════════════════════════════════════════════════╗
+ ║  ORACLE CLOUD INFRASTRUCTURE (OCI)                                                  ║
+ ║  Certified Generative AI Professional (2025)                                        ║
+ ║  Validation: LLMs, Retrieval-Augmented Generation (RAG), Fine-Tuning, Vector DBs    ║
+ ╚═════════════════════════════════════════════════════════════════════════════════════╝
+```
+
+- 🏅 **Oracle Cloud Infrastructure (OCI)**: Certified Generative AI Professional (2025).
+- ⭐ **HackerRank**: 5-Star Certified in **Python** & **SQL (Problem Solving & Relational Analytics)**.
+- ☕ **Infosys & ICT Academy**: Java SE Professional Certification.
+- 🌿 **Tata Consultancy Services (TCS)**: ESG (Environmental, Social & Governance) Virtual Experience Program.
+- 🎯 **Lakshagriha Hackathon 1.0**: Finalist at Dev Bhoomi Uttarakhand University.
+- 🏛️ **UGC NEP Saarthi**: Appointed Ambassador under the National Education Policy (NEP 2020) initiative.
+- 📦 **Flipkart GRiD 6.0**: Competitive Participant — Software Development Track.
+
+---
+
+## 🛠️ Cybernetic Tech Matrix
+
+<div align="center">
+
+### Spatial & Frontend
+![React](https://img.shields.io/badge/React_19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Three.js](https://img.shields.io/badge/Three.js-000000?style=for-the-badge&logo=three.js&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript_7-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS_4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![HTML5/CSS3](https://img.shields.io/badge/HTML5_3D_Canvas-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+
+### Backend & Real-Time Telemetry
+![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
+![Express.js](https://img.shields.io/badge/Express.js-404D59?style=for-the-badge)
+![WebRTC](https://img.shields.io/badge/WebRTC-333333?style=for-the-badge&logo=webrtc&logoColor=white)
+![Socket.io](https://img.shields.io/badge/Socket.io-010101?style=for-the-badge&logo=socket.io&logoColor=white)
+![PHP 8](https://img.shields.io/badge/PHP_8-777BB4?style=for-the-badge&logo=php&logoColor=white)
+![Java](https://img.shields.io/badge/Java_SE-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
+
+### Databases & Analytics Engines
+![MySQL](https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
+![SQL Server](https://img.shields.io/badge/MS_SQL_Server-CC292B?style=for-the-badge&logo=microsoftsqlserver&logoColor=white)
+![Jarvis Analytics](https://img.shields.io/badge/Jarvis_Analytics-FF6F00?style=for-the-badge&logo=google-analytics&logoColor=white)
+![Excel Power Modeling](https://img.shields.io/badge/Advanced_Excel-217346?style=for-the-badge&logo=microsoftexcel&logoColor=white)
+
+### AI, Machine Learning & Tools
+![TensorFlow](https://img.shields.io/badge/TensorFlow_Keras-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white)
+![Python](https://img.shields.io/badge/Python_3.12-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![OpenCV](https://img.shields.io/badge/OpenCV-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white)
+![Git](https://img.shields.io/badge/Git_VCS-F05032?style=for-the-badge&logo=git&logoColor=white)
+![Postman](https://img.shields.io/badge/Postman_API-FF6C37?style=for-the-badge&logo=postman&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite_Bundler-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+
+</div>
+
+---
+
+## 🗂️ Metaverse Repository Anatomy
+
+```bash
+Portfolio/
 ├── .github/
 │   └── workflows/
-│       └── deploy.yml          # Automated GitHub Pages CI/CD workflow
+│       └── deploy.yml            # CI/CD GitHub Pages deployment pipeline
 ├── public/
 │   └── assets/
 │       └── resource/
-│           ├── image_18e25f87.png                 # Portrait asset
-│           ├── SAJAL_SAXENA_RESUME_3b56c39e.pdf    # Official resume PDF
+│           ├── image_18e25f87.png                 # Isolated portrait asset
+│           ├── SAJAL_SAXENA_RESUME_3b56c39e.pdf   # Verified Resume PDF
 │           └── Sajal_Saxena_Resume.pdf
 ├── src/
 │   ├── components/
-│   │   ├── ContactSection.tsx    # Direct contact, mail triggers & LinkedIn
-│   │   ├── EducationSection.tsx  # Academic background & UGC NEP Saarthi
-│   │   ├── ExperienceSection.tsx # Urban Company & past engineering roles
-│   │   ├── Kinetic3DName.tsx     # Centered 3D kinetic name in Hero
-│   │   ├── MotionCard3D.tsx      # 3D interactive tilt card container
-│   │   ├── Navbar.tsx            # Clean glassmorphic navigation bar
-│   │   ├── ProfileDossier.tsx    # Detailed profile breakdown & modal
-│   │   ├── ProjectsSection.tsx   # ERP, WebRTC, CNN, & Systems projects
-│   │   ├── Sajal3DCanvas.tsx     # Three.js WebGL canvas & lighting
-│   │   ├── SkillsSection.tsx     # Tech stack & Oracle GenAI certification
-│   │   └── SmartBot.tsx          # Portfolio Copilot terminal assistant
+│   │   ├── ContactSection.tsx    # Direct mailer & telecommunications
+│   │   ├── EducationSection.tsx  # DBUU B.Tech & NEP Saarthi ambassador dossier
+│   │   ├── ExperienceSection.tsx # Urban Company, themrgamer, Feynn Labs
+│   │   ├── Kinetic3DName.tsx     # Centered monolithic 3D kinetic typography
+│   │   ├── MotionCard3D.tsx      # Multi-axis tilt card with specular glint
+│   │   ├── Navbar.tsx            # Floating glassmorphic cyber HUD
+│   │   ├── ProfileDossier.tsx    # Modal intelligence dossier
+│   │   ├── ProjectsSection.tsx   # Elexoplus, ConnectX, Leaf CNN, Billing System
+│   │   ├── Sajal3DCanvas.tsx     # Three.js WebGL canvas, lighting & particles
+│   │   ├── SkillsSection.tsx     # Tech stack & OCI GenAI certification badge
+│   │   └── SmartBot.tsx          # Real-time Portfolio Copilot terminal
 │   ├── utils/
-│   │   ├── audio.ts              # Synthesized Web Audio feedback (zero mp3s)
-│   │   └── backgroundRemoval.ts  # Client-side canvas studio background isolator
-│   ├── App.tsx                   # Main orchestrator & layout
-│   ├── index.css                 # Atelier Unit scale variables & animations
-│   └── main.tsx                  # Application entry point
-├── index.html                    # Root HTML & SEO meta tags
+│   │   ├── audio.ts              # Native Web Audio procedural synthesizer
+│   │   └── backgroundRemoval.ts  # Offscreen HTML5 canvas edge segmentation
+│   ├── App.tsx                   # Central spatial layout orchestrator
+│   ├── index.css                 # Atelier unit scales, glow tokens & animations
+│   └── main.tsx                  # Application bootstrap entry point
+├── index.html                    # SEO tags & WebGL meta viewport
 ├── package.json                  # Scripts & dependencies
 ├── tsconfig.json                 # Strict TypeScript configuration
-└── vite.config.ts                # Bundler configuration with relative base './'
+└── vite.config.ts                # Bundler settings with relative base './'
 ```
 
 ---
 
-## 🚀 Quick Start & Local Setup
+## ⚡ Deployment & Running Locally
 
-### Prerequisites
-- **Node.js**: v18.0.0 or higher
-- **npm** or **bun** / **yarn** / **pnpm**
-
-### Installation
+### 1. Launch in Local Metaverse Sandbox
 ```bash
 # Clone the repository
-git clone https://github.com/<your-username>/<repo-name>.git
+git clone https://github.com/saxenasajal03/Portfolio.git
 
-# Navigate to project folder
-cd <repo-name>
+# Enter project root
+cd Portfolio
 
-# Install all dependencies
+# Install dependencies (React 19, Three.js, Lucide, Tailwind v4)
 npm install
 
-# Start local development server
+# Start local WebGL engine
 npm run dev
 ```
+> Navigate to `http://localhost:3000` or `http://localhost:5173` to experience the 3D canvas with live audio synthesis.
 
-Open your browser at `http://localhost:3000` to interact with the 3D portfolio.
-
----
-
-## 🌐 Free Deployment to GitHub Pages
-
-This repository is already pre-configured for **GitHub Pages** with two easy options:
-
-### Option A: Automatic Deployment via GitHub Actions (Recommended)
-1. Push this repository to GitHub:
+### 2. Deploy to GitHub Pages (One-Click)
+This repository is configured with a automated GitHub Action in `.github/workflows/deploy.yml`:
+1. Push your changes to `main` branch:
    ```bash
    git add .
-   git commit -m "feat: complete modern portfolio"
-   git branch -M main
-   git remote add origin https://github.com/<your-username>/<your-repo-name>.git
-   git push -u origin main
+   git commit -m "feat(metaverse): deploy smooth 3D spatial portfolio"
+   git push origin main
    ```
-2. On GitHub, go to your repository **Settings** → **Pages**.
-3. Under **Build and deployment** → **Source**, select **GitHub Actions**.
-4. The `.github/workflows/deploy.yml` workflow will automatically build and publish your site! Your live portfolio will be accessible at:
-   `https://<your-username>.github.io/<your-repo-name>/`
-
-### Option B: Manual Deployment via `gh-pages`
-```bash
-# Builds production assets and deploys straight to the gh-pages branch
-npm run deploy
-```
-Then under **Settings** → **Pages**, select **Deploy from a branch** and choose `gh-pages` / `/ (root)`.
+2. Navigate to repository **Settings** → **Pages** → **Build and Deployment** → Select **GitHub Actions**.
+3. Your live link will be automatically generated at:
+   `https://saxenasajal03.github.io/Portfolio/`
 
 ---
 
-## 🛠️ Tech Stack & Libraries
+## 📡 Establish Direct Connection
 
-| Domain | Technology |
-|---|---|
-| **Framework & UI** | React 19, TypeScript, Tailwind CSS v4, Lucide Icons |
-| **3D & Graphics** | Three.js, WebGL, PMREMGenerator, Canvas 2D API |
-| **Motion & Parallax** | CSS 3D Transforms (`preserve-3d`), Custom Exponential Damping (`lerp`) |
-| **Audio** | Procedural Web Audio API (Synthesized resonant oscillators) |
-| **Build & Deploy** | Vite 8, GitHub Actions, gh-pages |
+<div align="center">
 
----
+| Channel | Gateway / Coordinates | Action |
+|:---|:---|:---:|
+| ✉️ **Direct Secure Mail** | `sajalsaxenagola@gmail.com` | [Send Transmission](mailto:sajalsaxenagola@gmail.com) |
+| 💼 **LinkedIn Gateway** | `/in/sajal-saxena-cse/` | [Connect Profile](https://linkedin.com/in/sajal-saxena-cse/) |
+| 💻 **GitHub Hub** | `saxenasajal03` | [Inspect Repos](https://github.com/saxenasajal03) |
+| 📞 **Direct Dial** | `+91 88408 10386` | [Direct Telemetry](tel:+918840810386) |
+| 📍 **Base Station** | Bharat Bhushan Colony, Gola Gokarannath, UP – 262802 | [India Map Node](#-physical-coordinates-to-metaverse-nodes-official-map-of-india) |
 
-## 📬 Contact & Connect
+</div>
 
-- **Engineer**: Sajal Saxena
-- **Role**: Business Development Associate (Central SBC Quality) @ Urban Company
-- **Email**: [sajalsaxenagola@gmail.com](mailto:sajalsaxenagola@gmail.com)
-- **LinkedIn**: [linkedin.com/in/sajal-saxena-cse](https://www.linkedin.com/in/sajal-saxena-cse/)
-- **Location**: Ghitorni, New Delhi / Gola Gokarannath, Uttar Pradesh (PIN: 262802)
+<br/>
 
----
-
-© 2026 Sajal Saxena. All rights reserved.
+<div align="center">
+  <sub>Designed & Engineered with Spatial Precision · Three.js WebGL & React 19 · © 2026 Sajal Saxena</sub>
+</div>

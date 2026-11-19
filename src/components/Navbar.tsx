@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Download, Mail, Menu as MenuIcon, X, Sparkles, User, Briefcase, Code2, GraduationCap, Phone, Linkedin } from 'lucide-react';
+import { Download, Mail, Menu as MenuIcon, X, Sparkles, User, Briefcase, Code2, GraduationCap, Phone, Linkedin, Navigation } from 'lucide-react';
 import { soundEngine } from '../utils/audio';
 import { getAssetUrl } from '../utils/assets';
 
@@ -24,6 +24,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDossier }) => {
     { label: 'Projects', href: '#projects', icon: Code2 },
     { label: 'Experience', href: '#experience', icon: Briefcase },
     { label: 'Skills & AI', href: '#skills', icon: User },
+    { label: 'India Map', href: '#spatial-india', icon: Navigation },
     { label: 'Education', href: '#education', icon: GraduationCap },
     { label: 'Contact', href: '#contact', icon: Mail },
   ];

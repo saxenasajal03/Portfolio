@@ -13,6 +13,7 @@ import { ExperienceSection } from './components/ExperienceSection';
 import { SkillsSection } from './components/SkillsSection';
 import { EducationSection } from './components/EducationSection';
 import { ContactSection } from './components/ContactSection';
+import { IndiaSpatialMap } from './components/IndiaSpatialMap';
 import { SmartBot } from './components/SmartBot';
 import { Kinetic3DName } from './components/Kinetic3DName';
 import { soundEngine } from './utils/audio';
@@ -190,8 +191,18 @@ export default function App() {
               className="rv text-neutral-300 hover:text-[#ff9a3c] transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/40 hover:bg-black/70 border border-white/10 hover:border-[#ff9a3c]/50 backdrop-blur-sm"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-[#10b981]" />
-              <span>03. Skills & GenAI Certs</span>
+              <span>03. Skills & GenAI</span>
               <ChevronRight size={13} className="text-[#10b981]" />
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => scrollToSection('#spatial-india')}
+              className="rv text-neutral-300 hover:text-[#ff9a3c] transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/40 hover:bg-black/70 border border-white/10 hover:border-[#ff9a3c]/50 backdrop-blur-sm"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#ff9a3c]" />
+              <span>04. India Spatial Map</span>
+              <ChevronRight size={13} className="text-[#ff9a3c]" />
             </button>
           </li>
         </ul>
@@ -223,6 +234,9 @@ export default function App() {
 
       {/* Section 04: Education */}
       <EducationSection />
+
+      {/* Section 04b: Sovereign India Spatial Map */}
+      <IndiaSpatialMap />
 
       {/* Section 05: Contact & Resume */}
       <ContactSection />
