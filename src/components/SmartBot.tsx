@@ -14,119 +14,81 @@ import {
   Zap,
   Phone,
   MessageSquare,
-  Compass,
-  Key,
   Volume2,
   VolumeX,
-  Languages,
   Mic,
-  CheckCircle2
+  MicOff,
+  CheckCircle2,
+  Building2,
+  GraduationCap,
+  Sparkle
 } from 'lucide-react';
 import { soundEngine } from '../utils/audio';
 import { getAssetUrl } from '../utils/assets';
 
 interface ActionButton {
   label: string;
-  icon?: 'download' | 'linkedin' | 'mail' | 'scroll';
+  icon?: 'download' | 'linkedin' | 'mail' | 'scroll' | 'phone';
   target?: string;
-  onClick?: () => void;
 }
 
 interface Message {
   id: string;
   sender: 'bot' | 'user';
   title?: string;
+  badge?: string;
   text: string;
-  textHindi?: string;
+  highlights?: string[];
   timestamp: string;
   actions?: ActionButton[];
-  category?: 'experience' | 'projects' | 'skills' | 'certs' | 'contact' | 'general' | 'greeting';
 }
-
-const SAJAL_SYSTEM_KNOWLEDGE = `
-You are the official AI Assistant & Copilot for Sajal Saxena.
-You speak both English and natural, polite Hindi (शुद्ध एवं सहज हिंदी) fluently.
-If the user asks in Hindi or asks you to speak in Hindi, respond in fluent, grammatically perfect Hindi.
-
-Sajal Saxena's Complete Resume & Portfolio Knowledge Base:
-- Current Role: Business Development Associate – Central SBC Quality Team at Urban Company (Apr 2026 – Present, HQ: Ghitorni, New Delhi).
-  - Resolves Tier 1 and Tier 2 operational bottlenecks and partner escalations through structured root-cause analysis (RCA).
-  - Monitors partner performance, compliance, and service-level agreements (SLAs) using Jarvis SQL analytics and advanced Excel modeling.
-  - Maintains cohort Real-Time (RT) attendance compliance exceeding 80%.
-  - Leads Partner Upgrades Training and AI Handholding pilot initiatives.
-- Past Experience:
-  - themrgamer.com (Jan 2025 – Mar 2025): Web Developer (React.js, PHP 8, MySQL, cPanel). Optimized backend APIs and relational queries, slashing latency by 30%.
-  - Feynn Labs (Aug 2024 – Oct 2024): AI/ML Intern (Python, TensorFlow, Pandas). Built ML models and automated ETL data validation workflows.
-  - CollegeDesire (Jan 2024 – Jun 2024): Web Developer (React.js, PHP, MySQL, Technical SEO). Correlated with +25% organic visibility growth.
-- Key Projects:
-  1. Elexoplus Commerce & ERP Suite: Dual D2C Storefront (elexoplus.com) and B2B Wholesale Portal (b2b.elexoplus.com) with RBAC, inventory tracking, and checkout reconciliation (React.js, Node.js, Express, MySQL).
-  2. ConnectX: Real-Time Chat & Video Calling using WebRTC mesh (<100ms latency) and Socket.io signaling (React.js, Node.js, MongoDB).
-  3. Plant Leaf Disease Identifier: Deep learning CNN model in Python/TensorFlow/OpenCV with over 95% validation accuracy for foliar pathology.
-  4. Electricity Bill Management System: Enterprise desktop billing software in Java Swing/AWT with SQL Server stored procedures and ACID consistency.
-- Education:
-  - B.Tech in Computer Science and Engineering (2021 – 2025) from Dev Bhoomi Uttarakhand University (DBUU), Dehradun.
-  - Class XII (PCM) & Class X from Children’s Academy Senior Secondary School, Gola Gokarannath (PIN: 262802).
-  - Appointed NEP Saarthi Ambassador by University Grants Commission (UGC).
-- Certifications & Honors:
-  - Oracle Cloud Infrastructure (OCI) 2025 Certified Generative AI Professional
-  - HackerRank 5-Star Python & SQL Certifications
-  - Infosys & ICT Academy Java Enterprise Certification
-  - TCS ESG Virtual Experience Program
-  - Finalist in Lakshagriha Hackathon 1.0 (DBUU)
-  - Flipkart GRiD 6.0 Track Participant
-- Contact Coordinates:
-  - Email: sajalsaxenagola@gmail.com
-  - Phone / WhatsApp: +91 88408 10386
-  - LinkedIn: https://www.linkedin.com/in/sajal-saxena-cse/
-  - Base: Ghitorni, New Delhi / Gola Gokarannath, Uttar Pradesh (PIN: 262802)
-`;
 
 export const SmartBot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [apiKey, setApiKey] = useState<string>(() => localStorage.getItem('sajal_gemini_api_key') || '');
-  const [showKeyModal, setShowKeyModal] = useState(false);
-  const [tempKeyInput, setTempKeyInput] = useState('');
   const [voiceEnabled, setVoiceEnabled] = useState<boolean>(true);
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
   const [currentSpeakingId, setCurrentSpeakingId] = useState<string | null>(null);
 
+  // Live Speech Recognition (Microphone like Gemini Live)
+  const [isListening, setIsListening] = useState<boolean>(false);
+  const [transcriptPreview, setTranscriptPreview] = useState<string>('');
+  const recognitionRef = useRef<any>(null);
+
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+
   const [messages, setMessages] = useState<Message[]>([
     {
-      id: 'init-1',
+      id: 'welcome-1',
       sender: 'bot',
-      title: 'नमस्ते & Welcome',
+      title: 'नमस्ते जी! सजल के AI कॉपायलट में आपका स्वागत है',
+      badge: 'सजल सक्सेना · पर्सनल AI असिस्टेंट',
       text:
-        "नमस्ते! I am Sajal's AI Copilot powered by Google AI Studio Gemini.\n\n" +
-        "सजल सक्सेना के पोर्टफोलियो में आपका स्वागत है। मैं हिंदी और अंग्रेजी दोनों में सजल के प्रोजेक्ट्स, अर्बन कंपनी अनुभव और स्किल्स के बारे में विस्तार से बता सकता हूँ।\n\n" +
-        "• **Urban Company Role** (Central SBC Quality, RT Attendance >80%)\n" +
-        "• **Projects** (Elexoplus D2C/B2B ERP, ConnectX WebRTC, 95% Foliar CNN)\n" +
-        "• **Certifications** (OCI 2025 GenAI Pro, HackerRank, Infosys)\n\n" +
-        "आप मुझसे हिंदी या इंग्लिश में कुछ भी पूछ सकते हैं!",
-      textHindi:
-        "नमस्ते! मैं सजल सक्सेना का एआई कॉपायलट हूँ। आप मुझसे सजल के अर्बन कंपनी अनुभव, एलेक्सोप्लस ईआरपी प्रोजेक्ट्स, और ओरेकल जेन-एआई सर्टिफिकेशन के बारे में हिंदी में पूछ सकते हैं।",
+        'नमस्ते! मैं सजल सक्सेना की पर्सनल AI असिस्टेंट हूँ। मैं आपको सजल के काम, उनकी स्किल्स, और उनके प्रोजेक्ट्स के बारे में बहुत ही आसान और स्पष्ट हिंदी में बताऊँगी।\n\nआप मुझसे बोलकर या लिखकर कुछ भी पूछ सकते हैं, जैसे कि:\n• सजल अर्बन कंपनी में क्या काम करते हैं?\n• उनके बनाए मुख्य प्रोजेक्ट्स (Elexoplus, ConnectX) क्या हैं?\n• उनके पास कौन-कौन से मुख्य सर्टिफिकेशन्स हैं?',
+      highlights: [
+        'अर्बन कंपनी: सेंट्रल SBC क्वालिटी टीम (RT Attendance >80%)',
+        'प्रोजेक्ट्स: Elexoplus ई-कॉमर्स व ERP, ConnectX वीडियो कॉलिंग',
+        'शिक्षा व सर्टिफिकेशन: B.Tech CSE (DBUU) · Oracle 2025 GenAI Pro',
+      ],
       timestamp: 'Active',
       actions: [
-        { label: 'Urban Company Role', icon: 'scroll', target: '#experience' },
-        { label: '3D Cyber City', icon: 'scroll', target: '#metaverse-city' },
-        { label: 'Download Resume', icon: 'download' },
+        { label: 'अर्बन कंपनी का काम', icon: 'scroll', target: '#experience' },
+        { label: '3D एडवेंचर सिटी देखें', icon: 'scroll', target: '#metaverse-city' },
+        { label: 'रिज्यूमे डाउनलोड करें', icon: 'download' },
       ],
-      category: 'greeting',
     },
   ]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to bottom of chat
   useEffect(() => {
     if (isOpen) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, isTyping, isOpen]);
 
-  // Live Hindi / English Speech Synthesizer
-  const speakText = (text: string, messageId: string) => {
+  // Female Hindi Speech Synthesizer
+  const speakFemaleHindi = (text: string, messageId: string) => {
     if (!('speechSynthesis' in window)) return;
 
     window.speechSynthesis.cancel();
@@ -137,27 +99,36 @@ export const SmartBot: React.FC = () => {
       return;
     }
 
-    // Clean markdown characters for crystal-clear natural speech
+    // Clean text for sweet, natural pronunciation
     const cleanSpeech = text
       .replace(/[#*`_~]/g, '')
       .replace(/\(https?:\/\/[^\)]+\)/g, '')
       .replace(/\[([^\]]+)\]/g, '$1')
       .replace(/•/g, ', ')
+      .replace(/Elexoplus/gi, 'एलेक्सो-प्लस')
+      .replace(/ConnectX/gi, 'कनेक्ट-एक्स')
       .trim();
 
     const utterance = new SpeechSynthesisUtterance(cleanSpeech);
+    utterance.lang = 'hi-IN';
+    // Slightly elevated pitch & natural smooth rate for a sweet, polite female voice
+    utterance.pitch = 1.18;
+    utterance.rate = 0.94;
 
-    // Detect if text contains Hindi Devanagari characters
-    const hasHindi = /[\u0900-\u097F]/.test(cleanSpeech);
-    utterance.lang = hasHindi ? 'hi-IN' : 'en-US';
-    utterance.rate = hasHindi ? 0.95 : 1.0;
-    utterance.pitch = 1.0;
-
-    // Pick best matching Hindi or natural voice if available
     const voices = window.speechSynthesis.getVoices();
-    if (hasHindi) {
-      const hindiVoice = voices.find((v) => v.lang.includes('hi') || v.name.toLowerCase().includes('hindi') || v.name.toLowerCase().includes('kalpana') || v.name.toLowerCase().includes('hemant'));
-      if (hindiVoice) utterance.voice = hindiVoice;
+    // Prioritize female Hindi voices if available
+    const femaleHindi = voices.find(
+      (v) =>
+        (v.lang.includes('hi') || v.lang.includes('Hindi')) &&
+        (v.name.toLowerCase().includes('female') ||
+          v.name.toLowerCase().includes('kalpana') ||
+          v.name.toLowerCase().includes('swara') ||
+          v.name.toLowerCase().includes('zira') ||
+          v.name.toLowerCase().includes('google हिन्दी'))
+    ) || voices.find((v) => v.lang.includes('hi') || v.lang.includes('Hindi'));
+
+    if (femaleHindi) {
+      utterance.voice = femaleHindi;
     }
 
     utterance.onstart = () => {
@@ -186,160 +157,204 @@ export const SmartBot: React.FC = () => {
     }
   };
 
-  const handleSaveApiKey = () => {
-    const trimmed = tempKeyInput.trim();
-    setApiKey(trimmed);
-    localStorage.setItem('sajal_gemini_api_key', trimmed);
-    setShowKeyModal(false);
+  // Live Speech-to-Text Recognition (Gemini Live Microphone UI)
+  const toggleListening = () => {
+    const SpeechRecognition =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert('आपके ब्राउज़र में माइक्रोफ़ोन स्पीच रिकॉग्निशन सपोर्ट नहीं है। कृपया टाइप करके पूछें।');
+      return;
+    }
+
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+      setTranscriptPreview('');
+      return;
+    }
+
+    stopSpeaking();
     soundEngine.playResonance();
+    setIsListening(true);
+    setTranscriptPreview('सुन रही हूँ, कृपया बोलिए...');
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'hi-IN'; // Prioritize Hindi voice input
+    recognition.interimResults = true;
+    recognition.continuous = false;
+
+    recognition.onresult = (event: any) => {
+      let interim = '';
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          const finalTranscript = event.results[i][0].transcript;
+          setIsListening(false);
+          setTranscriptPreview('');
+          processQuery(finalTranscript);
+          return;
+        } else {
+          interim += event.results[i][0].transcript;
+        }
+      }
+      setTranscriptPreview(interim);
+    };
+
+    recognition.onerror = () => {
+      setIsListening(false);
+      setTranscriptPreview('');
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+      setTranscriptPreview('');
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
   };
 
-  // Google AI Studio Gemini API Caller
-  const callGoogleAIStudio = async (prompt: string): Promise<string | null> => {
-    const key = apiKey || (import.meta.env.VITE_GEMINI_API_KEY as string) || '';
-    if (!key) return null;
-
-    try {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`;
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          systemInstruction: {
-            parts: [{ text: SAJAL_SYSTEM_KNOWLEDGE }],
-          },
-          contents: [
-            {
-              role: 'user',
-              parts: [{ text: prompt }],
-            },
-          ],
-          generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 600,
-          },
-        }),
-      });
-
-      if (!response.ok) return null;
-      const data = await response.json();
-      const generated = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-      return generated || null;
-    } catch (err) {
-      console.warn('Google AI Studio API call error:', err);
-      return null;
-    }
-  };
-
-  // High-accuracy fallback knowledge generator
-  const getLocalKnowledgeReply = (q: string): { reply: string; title: string; actions?: ActionButton[] } => {
+  // High-accuracy clear Hindi knowledge generator
+  const generateClearHindiAnswer = (q: string): Omit<Message, 'id' | 'sender' | 'timestamp'> => {
     const lq = q.toLowerCase();
-    const isHindi = /[\u0900-\u097F]/.test(q) || lq.includes('hindi') || lq.includes('हिंदी') || lq.includes('kahan') || lq.includes('kaun');
 
-    if (lq.includes('urban') || lq.includes('experience') || lq.includes('job') || lq.includes('काम') || lq.includes('अर्बन')) {
+    // Urban Company Experience Query
+    if (lq.includes('urban') || lq.includes('कंपनी') || lq.includes('काम') || lq.includes('job') || lq.includes('experience') || lq.includes('quality') || lq.includes('sla')) {
       return {
-        title: isHindi ? 'अर्बन कंपनी अनुभव' : 'Urban Company Central SBC Quality',
-        reply: isHindi
-          ? "सजल सक्सेना अर्बन कंपनी (Ghitorni, New Delhi) में **Business Development Associate (Central SBC Quality Team)** के पद पर कार्यरत हैं (अप्रैल 2026 से वर्तमान):\n\n" +
-            "• **Tier 1 और Tier 2 एस्केलेशंस**: ऑपरेशन्स की समस्याओं का रूट-कॉज़ एनालिसिस (RCA) द्वारा समाधान करते हैं।\n" +
-            "• **रियल-टाइम अटेंडेंस**: 80% से अधिक RT अटेंडेंस बेंचमार्क बनाए रखते हैं।\n" +
-            "• **जार्विस एनालिटिक्स और SQL**: सर्विस लेवल एग्रीमेंट्स (SLAs) और पार्टनर परफॉरमेंस की लाइव मॉनिटरिंग करते हैं।\n" +
-            "• **AI हैंडहोल्डिंग पायलट**: पार्टनर ट्रेनिंग और एआई ऑटोमेशन इनिशिएटिव का नेतृत्व करते हैं।"
-          : "Sajal is currently working as a **Business Development Associate** in Urban Company's **Central SBC Quality Team** in Ghitorni, New Delhi (Apr 2026 – Present):\n\n" +
-            "• **Tier 1 & 2 Escalations**: Resolves complex partner bottlenecks through structured root-cause analysis (RCA).\n" +
-            "• **SLA & Real-Time Attendance**: Sustains partner Real-Time (RT) attendance exceeding 80%.\n" +
-            "• **Jarvis Analytics & SQL**: High-throughput telemetry and SLA compliance tracking.\n" +
-            "• **AI Handholding Pilot**: Drives partner upgrade training and AI workflow optimization.",
+        title: 'अर्बन कंपनी में सजल का रोल और जिम्मेदारियाँ',
+        badge: 'वर्तमान पद · घिटोरनी, नई दिल्ली',
+        text:
+          'सजल सक्सेना वर्तमान में अर्बन कंपनी की सेंट्रल SBC क्वालिटी टीम में Business Development Associate के रूप में कार्यरत हैं (अप्रैल 2026 से वर्तमान):\n\n' +
+          '• **Tier 1 व Tier 2 एस्केलेशंस का समाधान**: पार्टनर्स और सर्विस से जुड़ी गंभीर समस्याओं का रूट-कॉज़ एनालिसिस (RCA) करके तुरंत समाधान निकालते हैं।\n' +
+          '• **पार्टनर अटेंडेंस 80%+**: अपने पूरे रीजन में सर्विस पार्टनर्स की रियल-टाइम (RT) अटेंडेंस हमेशा 80% से ऊपर बनाए रखते हैं।\n' +
+          '• **जार्विस एनालिटिक्स व SQL**: आधुनिक SQL क्वेरीज़ और जार्विस डैशबोर्ड द्वारा SLA और क्वालिटी मैट्रिक्स की 24/7 निगरानी करते हैं।\n' +
+          '• **AI हैंडहोल्डिंग पायलट लीड**: पार्टनर्स की डिजिटल ट्रेनिंग और एआई ऑटोमेशन प्रोजेक्ट्स का नेतृत्व करते हैं।',
+        highlights: [
+          '80% से अधिक रियल-टाइम अटेंडेंस का रिकॉर्ड',
+          'SLA और क्वालिटी की डेटा-ड्रिवन मॉनिटरिंग',
+          'पार्टनर अपग्रेड्स और AI हैंडहोल्डिंग का सफल संचालन',
+        ],
         actions: [
-          { label: 'View Experience Section', icon: 'scroll', target: '#experience' },
-          { label: 'Download Resume', icon: 'download' },
+          { label: 'अर्बन कंपनी सेक्शन देखें', icon: 'scroll', target: '#experience' },
+          { label: 'लिंक्डइन प्रोफाइल देखें', icon: 'linkedin' },
         ],
       };
     }
 
-    if (lq.includes('elexoplus') || lq.includes('project') || lq.includes('connectx') || lq.includes('cnn') || lq.includes('प्रोजेक्ट')) {
+    // Projects Query
+    if (lq.includes('project') || lq.includes('elexoplus') || lq.includes('connectx') || lq.includes('leaf') || lq.includes('प्रोजेक्ट') || lq.includes('सिस्टम')) {
       return {
-        title: isHindi ? 'सजल के प्रमुख प्रोजेक्ट्स' : 'Flagship Systems & Projects',
-        reply: isHindi
-          ? "सजल सक्सेना के 4 मुख्य इंजीनियरिंग प्रोजेक्ट्स:\n\n" +
-            "1. **Elexoplus Commerce & ERP Suite** *(React, Node, Express, MySQL)*: D2C स्टोर (elexoplus.com) और B2B होलसेल पोर्टल (b2b.elexoplus.com) का सम्पूर्ण ईआरपी सिस्टम।\n" +
-            "2. **ConnectX Real-Time Video Calling** *(React, WebRTC, Socket.io, MongoDB)*: 100ms से कम लेटेंसी वाला पीयर-टू-पीयर वीडियो व चैट प्लेटफॉर्म।\n" +
-            "3. **Plant Leaf Disease Identifier (CNN)** *(Python, TensorFlow, OpenCV)*: पौधों की बीमारियों की 95%+ सटीकता से पहचान करने वाला डीप लर्निंग मॉडल।\n" +
-            "4. **Electricity Bill Management System** *(Java Swing/AWT, SQL Server)*: ACID कम्प्लायंट डेस्कटॉप बिलिंग सिस्टम।"
-          : "Sajal has architected 4 major engineering systems:\n\n" +
-            "1. **Elexoplus Commerce & ERP Suite** *(React, Node, Express, MySQL)*: Dual D2C Storefront (elexoplus.com) and B2B Wholesale Portal (b2b.elexoplus.com) with RBAC and automated inventory pipelines.\n" +
-            "2. **ConnectX Video Calling Engine** *(React, WebRTC, Socket.io, MongoDB)*: Sub-100ms low latency peer-to-peer media mesh.\n" +
-            "3. **Plant Leaf Disease Identifier** *(Python, TensorFlow, OpenCV)*: Convolutional Neural Network with >95% validation accuracy.\n" +
-            "4. **Electricity Bill Management** *(Java Swing, SQL Server)*: ACID-compliant relational billing software.",
+        title: 'सजल के 4 मुख्य इंजीनियरिंग प्रोजेक्ट्स',
+        badge: 'फुल-स्टैक, AI और रियल-टाइम सिस्टम्स',
+        text:
+          'सजल ने इंडस्ट्री-लेवल के 4 बेहतरीन प्रोजेक्ट्स बनाए हैं:\n\n' +
+          '1. **Elexoplus Commerce & ERP Suite**:\nयह एक कम्प्लीट ई-कॉमर्स व होलसेल ईआरपी सिस्टम है जिसमें D2C स्टोर (elexoplus.com) और B2B होलसेल पोर्टल (b2b.elexoplus.com) दोनों शामिल हैं।\n\n' +
+          '2. **ConnectX Real-Time Video Calling**:\nWebRTC और Socket.io पर आधारित हाई-स्पीड पीयर-टू-पीयर वीडियो कॉलिंग व चैटिंग ऐप (लेटेंसी 100ms से भी कम)।\n\n' +
+          '3. **Plant Leaf Disease Identifier (CNN)**:\nपौधों की पत्तियों के रोगों की 95%+ सटीकता से पहचान करने वाला डीप लर्निंग AI मॉडल (TensorFlow/Python/OpenCV)।\n\n' +
+          '4. **Electricity Bill Management System**:\nजावा (Swing/AWT) और माइक्रोसॉफ्ट SQL सर्वर पर बना सिक्योर डेस्कटॉप बिलिंग सॉफ्टवेयर।',
+        highlights: [
+          'Elexoplus: लाइव D2C व B2B ईआरपी सिस्टम',
+          'ConnectX: सब-100ms लेटेंसी वाला वीडियो मेश',
+          'AI प्लांट मॉडल: 95% से अधिक टेस्टेड एक्यूरेसी',
+        ],
         actions: [
-          { label: 'Inspect Projects', icon: 'scroll', target: '#projects' },
-          { label: '3D Adventure City', icon: 'scroll', target: '#metaverse-city' },
+          { label: 'प्रोजेक्ट्स सेक्शन देखें', icon: 'scroll', target: '#projects' },
+          { label: '3D सिटी में घूमें', icon: 'scroll', target: '#metaverse-city' },
         ],
       };
     }
 
-    if (lq.includes('skill') || lq.includes('tech') || lq.includes('stack') || lq.includes('हुनर') || lq.includes('तकनीक')) {
+    // Skills & Certifications Query
+    if (lq.includes('skill') || lq.includes('tech') || lq.includes('cert') || lq.includes('ज्ञान') || lq.includes('हुनर') || lq.includes('ओरेकल') || lq.includes('oracle')) {
       return {
-        title: isHindi ? 'तकनीकी कौशल (Technical Stack)' : 'Technical Matrix & Arsenal',
-        reply: isHindi
-          ? "सजल का मुख्य टेक स्टैक:\n\n" +
-            "• **Frontend**: React 19, TypeScript, JavaScript (ES6+), Three.js / WebGL, Tailwind CSS v4\n" +
-            "• **Backend**: Node.js, Express.js, PHP 8, REST APIs, WebRTC, Socket.io\n" +
-            "• **Databases**: MySQL, MongoDB, Microsoft SQL Server, DB2, Stored Procedures\n" +
-            "• **AI & ML**: TensorFlow, Keras, OpenCV, Python, Oracle Cloud GenAI (OCI 2025)\n" +
-            "• **Operations**: Jarvis Analytics, Root-Cause Analysis, SLA Monitoring"
-          : "Sajal's core technical arsenal:\n\n" +
-            "• **Spatial & Frontend**: React 19, TypeScript, JavaScript, Three.js WebGL, Tailwind CSS\n" +
-            "• **Backend & Real-Time**: Node.js, Express.js, PHP 8, WebRTC, Socket.io, REST APIs\n" +
-            "• **Databases & Telemetry**: MySQL, MongoDB, MS SQL Server, Jarvis Analytics, Advanced Excel\n" +
-            "• **AI & Vision**: TensorFlow, OpenCV, Python, Oracle Cloud (OCI) 2025 GenAI Pro",
+        title: 'तकनीकी दक्षता एवं राष्ट्रीय सर्टिफिकेशन्स',
+        badge: 'वेब, AI व डेटाबेस स्पेशलिस्ट',
+        text:
+          'सजल के पास मॉडर्न सॉफ्टवेयर इंजीनियरिंग और ऑपरेशन्स का मजबूत अनुभव है:\n\n' +
+          '• **प्रोग्रामिंग भाषाएँ**: JavaScript (ES6+), TypeScript, Python, Java, PHP 8, HTML5, CSS3\n' +
+          '• **फ्रेमवर्क्स**: React 19, Node.js, Express.js, Tailwind CSS v4, Three.js WebGL, TensorFlow\n' +
+          '• **डेटाबेस व एनालिटिक्स**: MySQL, MongoDB, Microsoft SQL Server, जार्विस एनालिटिक्स, एडवांस्ड एक्सेल\n' +
+          '• **प्रमुख सर्टिफिकेशन्स**:\n  - Oracle Cloud (OCI) 2025 Certified Generative AI Professional\n  - HackerRank 5-Star Python व SQL सर्टिफाइड\n  - Infosys व ICT Academy Java सर्टिफाइड\n  - Lakshagriha हैकथॉन 1.0 फाइनलिस्ट (DBUU)',
+        highlights: [
+          'Oracle Certified GenAI Professional (2025)',
+          'HackerRank 5-स्टार वेरिफाइड कोडर',
+          'फुल-स्टैक व Three.js 3D वेब का गहरा अनुभव',
+        ],
         actions: [
-          { label: 'View Skills Section', icon: 'scroll', target: '#skills' },
-          { label: 'Connect on LinkedIn', icon: 'linkedin' },
+          { label: 'स्किल्स मैट्रिक्स देखें', icon: 'scroll', target: '#skills' },
+          { label: 'सर्टिफिकेशन्स देखें', icon: 'scroll', target: '#skills' },
         ],
       };
     }
 
-    if (lq.includes('contact') || lq.includes('email') || lq.includes('phone') || lq.includes('संपर्क') || lq.includes('फोन')) {
+    // Education & Roots Query
+    if (lq.includes('college') || lq.includes('study') || lq.includes('education') || lq.includes('school') || lq.includes('पढ़ाई') || lq.includes('कॉलेज') || lq.includes('कहाँ') || lq.includes('रहते')) {
       return {
-        title: isHindi ? 'सजल से सीधा संपर्क' : 'Direct Contact Coordinates',
-        reply: isHindi
-          ? "सजल सक्सेना से आप सीधे संपर्क कर सकते हैं:\n\n" +
-            "• **ईमेल**: sajalsaxenagola@gmail.com\n" +
-            "• **फोन / व्हाट्सऐप**: +91 88408 10386\n" +
-            "• **लिंक्डइन**: linkedin.com/in/sajal-saxena-cse/\n" +
-            "• **स्थान**: घिटोरनी, नई दिल्ली / गोला गोकर्णनाथ, उत्तर प्रदेश (पिन: 262802)"
-          : "You can reach Sajal Saxena directly via:\n\n" +
-            "• **Email**: sajalsaxenagola@gmail.com\n" +
-            "• **Phone / WhatsApp**: +91 88408 10386\n" +
-            "• **LinkedIn**: linkedin.com/in/sajal-saxena-cse/\n" +
-            "• **Coordinates**: Ghitorni, New Delhi / Gola Gokarannath, UP (PIN: 262802)",
+        title: 'सजल का शैक्षणिक बैकग्राउंड एवं मूल स्थान',
+        badge: 'B.Tech CSE (2021-2025) · UGC NEP सारथी',
+        text:
+          'सजल की शैक्षणिक यात्रा और मूल निवास:\n\n' +
+          '• **B.Tech (कंप्यूटर साइंस इंजीनियरिंग)**: देव भूमि उत्तराखंड यूनिवर्सिटी (DBUU), देहरादून से 2021-2025 में पूर्ण।\n' +
+          '• **UGC NEP सारथी**: विश्वविद्यालय अनुदान आयोग (UGC) द्वारा राष्ट्रीय शिक्षा नीति (NEP 2020) के नियुक्त स्टूडेंट एंबेसडर।\n' +
+          '• **स्कूली शिक्षा**: चिल्ड्रन्स एकेडमी सीनियर सेकेंडरी स्कूल, गोला गोकर्णनाथ से 10वीं और 12वीं (PCM/साइंस) सीबीएसई से पूर्ण।\n' +
+          '• **मूल स्थान**: गोला गोकर्णनाथ (लखीमपुर खीरी), उत्तर प्रदेश (पिन: 262802)। वर्तमान में घिटोरनी, नई दिल्ली में अर्बन कंपनी के लिए कार्यरत।',
+        highlights: [
+          'देव भूमि उत्तराखंड यूनिवर्सिटी से B.Tech CSE',
+          'UGC नियुक्त NEP सारथी एंबेसडर',
+          'मूल निवासी: गोला गोकर्णनाथ, यूपी (262802)',
+        ],
         actions: [
-          { label: 'Send Direct Email', icon: 'mail', target: 'mailto:sajalsaxenagola@gmail.com' },
-          { label: 'LinkedIn Profile', icon: 'linkedin' },
+          { label: '3D इंडिया मैप पर देखें', icon: 'scroll', target: '#spatial-india' },
+          { label: 'एजुकेशन सेक्शन देखें', icon: 'scroll', target: '#education' },
         ],
       };
     }
 
-    // Default intelligent greeting & overview
+    // Contact Coordinates Query
+    if (lq.includes('contact') || lq.includes('email') || lq.includes('phone') || lq.includes('बात') || lq.includes('संपर्क') || lq.includes('फोन') || lq.includes('नंबर')) {
+      return {
+        title: 'सजल सक्सेना से सीधा संपर्क',
+        badge: '24/7 डायरेक्ट टेलीमेट्री',
+        text:
+          'आप सजल से सीधे इन माध्यमों से जुड़ सकते हैं:\n\n' +
+          '• **ईमेल**: sajalsaxenagola@gmail.com\n' +
+          '• **फोन / व्हाट्सऐप**: +91 88408 10386\n' +
+          '• **लिंक्डइन**: linkedin.com/in/sajal-saxena-cse/\n' +
+          '• **स्थान**: घिटोरनी, नई दिल्ली / गोला गोकर्णनाथ, उत्तर प्रदेश (पिन: 262802)',
+        highlights: [
+          'ईमेल पर सीधा संदेश भेजें',
+          'व्हाट्सऐप या कॉल द्वारा तत्काल संपर्क',
+          'लिंक्डइन नेटवर्क पर 1-क्लिक कनेक्शन',
+        ],
+        actions: [
+          { label: 'ईमेल भेजें', icon: 'mail', target: 'mailto:sajalsaxenagola@gmail.com' },
+          { label: 'सीधे कॉल करें', icon: 'phone', target: 'tel:+918840810386' },
+        ],
+      };
+    }
+
+    // General Natural Overview Response
     return {
-      title: isHindi ? 'सजल सक्सेना का परिचय' : 'Sajal Saxena Overview',
-      reply: isHindi
-        ? "सजल सक्सेना एक **Full-Stack Software Engineer** और अर्बन कंपनी की **Central SBC Quality Team** में **Business Development Associate** हैं।\n\n" +
-          "वे ओरेकल क्लाउड सर्टिफाइड जेनेरेटिव एआई प्रोफेशनल (OCI 2025) हैं और उन्होंने बी.टेक कंप्यूटर साइंस (2021-2025) देव भूमि उत्तराखंड यूनिवर्सिटी से किया है।\n\n" +
-          "आप मुझसे सजल के किसी भी प्रोजेक्ट (Elexoplus, ConnectX), काम के अनुभव या सर्टिफिकेशन्स के बारे में पूछ सकते हैं!"
-        : "Sajal Saxena is a **Full-Stack Software Engineer** and **Business Development Associate** at Urban Company's Central SBC Quality Team in New Delhi.\n\n" +
-          "He is an **Oracle Cloud Infrastructure (OCI) 2025 Certified Generative AI Professional** and holds a B.Tech in CSE from Dev Bhoomi Uttarakhand University.\n\n" +
-          "Ask me anything about his projects (Elexoplus ERP, ConnectX WebRTC), Urban Company operations, or technical skills in English or Hindi!",
+      title: 'सजल सक्सेना का संक्षिप्त परिचय',
+      badge: 'सॉफ्टवेयर इंजीनियर व BDA (अर्बन कंपनी)',
+      text:
+        'सजल सक्सेना एक बेहद प्रतिभाशाली **Full-Stack Software Engineer** और अर्बन कंपनी की **Central SBC Quality Team** में **Business Development Associate** हैं।\n\n' +
+        'वे ऑपरेशन्स में जटिल समस्याओं का RCA द्वारा तुरंत समाधान निकालते हैं, 80%+ अटेंडेंस बनाए रखते हैं, और साथ ही रिएक्ट, नोड, थ्री-डी Three.js और जनरेटिव AI (Oracle OCI 2025 Certified) के विशेषज्ञ हैं।\n\n' +
+        'आप मुझसे उनके प्रोजेक्ट्स (Elexoplus, ConnectX), काम के अनुभव या किसी भी अन्य विषय पर खुलकर पूछ सकते हैं!',
+      highlights: [
+        'अर्बन कंपनी: सेंट्रल SBC क्वालिटी ऑपरेशन्स',
+        'Oracle Cloud OCI GenAI 2025 सर्टिफाइड',
+        'B.Tech CSE (देव भूमि उत्तराखंड यूनिवर्सिटी)',
+      ],
       actions: [
-        { label: 'Urban Company Role', icon: 'scroll', target: '#experience' },
-        { label: 'Key Projects', icon: 'scroll', target: '#projects' },
+        { label: 'अर्बन कंपनी का अनुभव', icon: 'scroll', target: '#experience' },
+        { label: 'रिज्यूमे डाउनलोड करें', icon: 'download' },
       ],
     };
   };
 
-  const handleSend = async () => {
-    const raw = input.trim();
+  const processQuery = async (queryText: string) => {
+    const raw = queryText.trim();
     if (!raw) return;
 
     soundEngine.playTick();
@@ -354,43 +369,32 @@ export const SmartBot: React.FC = () => {
     setInput('');
     setIsTyping(true);
 
-    let replyText = '';
-    let title = 'Copilot';
-    let actions: ActionButton[] | undefined = undefined;
+    const answer = generateClearHindiAnswer(raw);
 
-    // 1. Try Google AI Studio Gemini API first
-    const geminiReply = await callGoogleAIStudio(raw);
-    if (geminiReply) {
-      replyText = geminiReply;
-      title = 'Gemini AI Studio';
-    } else {
-      // 2. High accuracy fallback local portfolio knowledge engine
-      const local = getLocalKnowledgeReply(raw);
-      replyText = local.reply;
-      title = local.title;
-      actions = local.actions;
-    }
+    setTimeout(() => {
+      const botMsgId = String(Date.now() + 1);
+      const botMsg: Message = {
+        id: botMsgId,
+        sender: 'bot',
+        title: answer.title,
+        badge: answer.badge,
+        text: answer.text,
+        highlights: answer.highlights,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        actions: answer.actions,
+      };
 
-    const botMsgId = String(Date.now() + 1);
-    const botMsg: Message = {
-      id: botMsgId,
-      sender: 'bot',
-      title,
-      text: replyText,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      actions,
-    };
+      setMessages((prev) => [...prev, botMsg]);
+      setIsTyping(false);
+      soundEngine.playTick();
 
-    setMessages((prev) => [...prev, botMsg]);
-    setIsTyping(false);
-    soundEngine.playTick();
-
-    // Auto-speak live in Hindi or English if voice narration is active
-    if (voiceEnabled) {
-      setTimeout(() => {
-        speakText(replyText, botMsgId);
-      }, 250);
-    }
+      // Automatically speak aloud in the female Hindi voice!
+      if (voiceEnabled) {
+        setTimeout(() => {
+          speakFemaleHindi(answer.text, botMsgId);
+        }, 300);
+      }
+    }, 350);
   };
 
   const handleActionClick = (action: ActionButton) => {
@@ -402,7 +406,7 @@ export const SmartBot: React.FC = () => {
       window.open(getAssetUrl('assets/resource/SAJAL_SAXENA_RESUME_3b56c39e.pdf'), '_blank');
     } else if (action.icon === 'linkedin') {
       window.open('https://www.linkedin.com/in/sajal-saxena-cse/', '_blank');
-    } else if (action.target?.startsWith('mailto:')) {
+    } else if (action.target?.startsWith('mailto:') || action.target?.startsWith('tel:')) {
       window.location.href = action.target;
     }
   };
@@ -411,117 +415,87 @@ export const SmartBot: React.FC = () => {
     <div className="fixed bottom-5 right-5 z-40 font-mono">
       {/* Bot Chat Window */}
       {isOpen && (
-        <div className="mb-3 w-[94vw] sm:w-[460px] h-[580px] max-h-[86vh] bg-[#120d09]/95 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.85),0_0_30px_rgba(255,154,60,0.2)] flex flex-col overflow-hidden animate-fadeIn">
+        <div className="mb-3 w-[94vw] sm:w-[470px] h-[610px] max-h-[88vh] bg-[#120d09]/96 backdrop-blur-2xl border border-white/20 rounded-3xl shadow-[0_25px_60px_rgba(0,0,0,0.9),0_0_35px_rgba(255,154,60,0.25)] flex flex-col overflow-hidden animate-fadeIn">
           
           {/* Header */}
-          <div className="px-4 py-3 bg-[#18110b] border-b border-white/15 flex items-center justify-between">
+          <div className="px-5 py-3.5 bg-gradient-to-r from-[#1c130d] via-[#160f0a] to-[#1c130d] border-b border-white/15 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="relative">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#ff9a3c] via-[#e66a1f] to-[#ff9a3c] text-[#130e09] font-black flex items-center justify-center font-mono text-xs shadow-md">
-                  <Terminal size={16} className="text-[#130e09]" />
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#ff9a3c] to-[#e66a1f] text-[#130e09] font-black flex items-center justify-center text-sm shadow-lg">
+                  <Sparkles size={18} className="text-[#130e09]" />
                 </div>
-                <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-[#18110b]" />
+                <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-[#160f0a]" />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-white tracking-wider flex items-center gap-2 font-mono">
-                  COPILOT AI
-                  <span className="text-[9px] px-1.5 py-0.2 rounded bg-[#ff9a3c]/20 text-[#ff9a3c] border border-[#ff9a3c]/30 font-normal">
-                    {apiKey ? 'GOOGLE AI STUDIO' : 'PORTFOLIO ENGINE'}
+                <h4 className="text-sm font-extrabold text-white tracking-wide flex items-center gap-2 font-mono">
+                  सजल AI कॉपायलट
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#ff9a3c]/20 text-[#ff9a3c] border border-[#ff9a3c]/40 font-semibold">
+                    लाइव हिंदी आवाज़
                   </span>
                 </h4>
-                <p className="text-[10px] text-neutral-400 font-sans">
-                  Live Hindi / English Speech Enabled
+                <p className="text-[11px] text-neutral-400 font-sans">
+                  सजल सक्सेना · पर्सनल असिस्टेंट
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-1.5">
-              {/* Google AI Studio API Key Button */}
-              <button
-                onClick={() => {
-                  soundEngine.playTick();
-                  setShowKeyModal((prev) => !prev);
-                }}
-                className={`p-1.5 rounded-lg border text-xs transition-colors flex items-center gap-1 ${
-                  apiKey
-                    ? 'bg-[#10b981]/20 border-[#10b981]/50 text-[#10b981]'
-                    : 'bg-white/5 border-white/10 text-neutral-400 hover:text-white'
-                }`}
-                title="Google AI Studio Gemini API Key"
-              >
-                <Key size={14} />
-              </button>
-
-              {/* Voice Speech Toggle Button */}
+            <div className="flex items-center gap-2">
+              {/* Voice Speech Toggle */}
               <button
                 onClick={() => {
                   soundEngine.playTick();
                   if (isSpeaking) stopSpeaking();
                   setVoiceEnabled((prev) => !prev);
                 }}
-                className={`p-1.5 rounded-lg border text-xs transition-colors flex items-center gap-1 ${
+                className={`p-2 rounded-xl border text-xs transition-all flex items-center gap-1.5 ${
                   voiceEnabled
-                    ? 'bg-[#ff9a3c]/20 border-[#ff9a3c]/50 text-[#ff9a3c]'
+                    ? 'bg-[#ff9a3c]/25 border-[#ff9a3c] text-[#ff9a3c] shadow-[0_0_12px_rgba(255,154,60,0.3)]'
                     : 'bg-white/5 border-white/10 text-neutral-500'
                 }`}
-                title={voiceEnabled ? 'Live Voice On (Speaking Hindi/English)' : 'Live Voice Muted'}
+                title={voiceEnabled ? 'हिंदी आवाज़ चालू है' : 'आवाज़ बंद है'}
               >
-                {voiceEnabled ? <Volume2 size={14} /> : <VolumeX size={14} />}
+                {voiceEnabled ? <Volume2 size={15} /> : <VolumeX size={15} />}
+                <span className="text-[10px] font-bold hidden sm:inline">
+                  {voiceEnabled ? 'आवाज़ ON' : 'म्यूट'}
+                </span>
               </button>
 
               <button
                 onClick={() => {
                   soundEngine.playTick();
                   stopSpeaking();
+                  if (isListening) toggleListening();
                   setIsOpen(false);
                 }}
-                className="p-1.5 rounded-lg text-neutral-400 hover:text-white hover:bg-white/10 transition-colors"
-                title="Close Copilot"
+                className="p-2 rounded-xl text-neutral-400 hover:text-white hover:bg-white/10 transition-colors"
+                title="बंद करें"
               >
-                <X size={16} />
+                <X size={18} />
               </button>
             </div>
           </div>
 
-          {/* Google AI Studio API Key Modal Overlay */}
-          {showKeyModal && (
-            <div className="p-4 bg-[#1e150f] border-b border-white/15 text-xs font-mono space-y-3">
-              <div className="flex items-center justify-between text-white font-bold">
-                <span className="flex items-center gap-1.5 text-[#ff9a3c]">
-                  <Key size={14} />
-                  Google AI Studio Free Gemini Key
-                </span>
-                <button onClick={() => setShowKeyModal(false)} className="text-neutral-400 hover:text-white">
-                  <X size={14} />
-                </button>
+          {/* Gemini Live Listening Bubble Banner */}
+          {isListening && (
+            <div className="p-4 bg-gradient-to-r from-[#2a1708] via-[#1e130c] to-[#2a1708] border-b border-[#ff9a3c]/40 flex items-center gap-3 animate-pulse">
+              <div className="relative flex items-center justify-center w-8 h-8 rounded-full bg-[#ff9a3c]/20">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ff9a3c] opacity-75"></span>
+                <Mic size={18} className="text-[#ff9a3c] relative z-10" />
               </div>
-              <p className="text-[11px] text-neutral-300 font-sans leading-relaxed">
-                Connect your free API key from{' '}
-                <a
-                  href="https://aistudio.google.com/app/apikey"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[#ff9a3c] underline"
-                >
-                  aistudio.google.com
-                </a>{' '}
-                for live Gemini 2.5 Flash responses. The key is stored safely only in your browser&apos;s local storage.
-              </p>
-              <div className="flex items-center gap-2">
-                <input
-                  type="password"
-                  value={tempKeyInput}
-                  onChange={(e) => setTempKeyInput(e.target.value)}
-                  placeholder={apiKey ? '••••••••••••••••••••' : 'AIzaSy...'}
-                  className="flex-1 bg-black/60 border border-white/20 rounded px-2.5 py-1.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#ff9a3c]"
-                />
-                <button
-                  onClick={handleSaveApiKey}
-                  className="px-3 py-1.5 rounded bg-[#ff9a3c] text-[#120e0a] font-bold text-xs hover:bg-[#ffb066] transition-colors"
-                >
-                  Save Key
-                </button>
+              <div className="flex-1">
+                <div className="text-[11px] text-[#ff9a3c] font-bold uppercase tracking-wider flex items-center gap-2">
+                  <span>लाइव सुन रही हूँ (बोलिए)...</span>
+                </div>
+                <div className="text-xs text-white italic font-sans truncate">
+                  {transcriptPreview || 'आपकी आवाज़ की प्रतीक्षा है...'}
+                </div>
               </div>
+              <button
+                onClick={toggleListening}
+                className="px-2.5 py-1 rounded-lg bg-red-500/20 text-red-300 border border-red-500/40 text-[11px] hover:bg-red-500/30"
+              >
+                रुकें
+              </button>
             </div>
           )}
 
@@ -530,63 +504,86 @@ export const SmartBot: React.FC = () => {
             {messages.map((m) => (
               <div
                 key={m.id}
-                className={`flex gap-2.5 ${m.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={`flex gap-3 ${m.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 {m.sender === 'bot' && (
-                  <div className="w-6 h-6 rounded-full bg-[#ff9a3c]/20 border border-[#ff9a3c]/40 flex items-center justify-center shrink-0 mt-0.5">
-                    <Sparkles size={12} className="text-[#ff9a3c]" />
+                  <div className="w-7 h-7 rounded-full bg-[#ff9a3c]/20 border border-[#ff9a3c]/40 flex items-center justify-center shrink-0 mt-1">
+                    <Sparkle size={14} className="text-[#ff9a3c]" />
                   </div>
                 )}
 
                 <div
-                  className={`max-w-[85%] rounded-xl p-3.5 space-y-2 relative ${
+                  className={`max-w-[88%] rounded-2xl p-4 space-y-2.5 relative ${
                     m.sender === 'user'
-                      ? 'bg-gradient-to-r from-[#ff9a3c] to-[#e66a1f] text-[#130e09] font-medium shadow-md'
-                      : 'bg-[#18110b] border border-white/10 text-neutral-200'
+                      ? 'bg-gradient-to-r from-[#ff9a3c] to-[#e66a1f] text-[#130e09] font-semibold shadow-lg'
+                      : 'bg-[#18110b] border border-white/12 text-neutral-200 shadow-md'
                   }`}
                 >
-                  {/* Card Title & Audio Trigger */}
+                  {/* Bot Message Header */}
                   {m.sender === 'bot' && (
-                    <div className="border-b border-white/10 pb-2 mb-1 flex items-center justify-between gap-2">
-                      <span className="font-bold text-[#ff9a3c] text-xs font-mono tracking-tight flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#ff9a3c]" />
-                        {m.title || 'Copilot AI'}
-                      </span>
+                    <div className="border-b border-white/10 pb-2 mb-1 flex items-start justify-between gap-2">
+                      <div>
+                        <span className="text-[10px] font-mono text-[#ff9a3c] uppercase tracking-wider block font-bold">
+                          {m.badge || 'सजल AI'}
+                        </span>
+                        <h5 className="font-bold text-white text-xs sm:text-sm font-sans tracking-tight mt-0.5">
+                          {m.title}
+                        </h5>
+                      </div>
 
-                      {/* Live Speech Action Button */}
+                      {/* Listen in sweet female Hindi voice */}
                       <button
-                        onClick={() => speakText(m.text, m.id)}
-                        className={`p-1 rounded text-[10px] flex items-center gap-1 transition-colors ${
+                        onClick={() => speakFemaleHindi(m.text, m.id)}
+                        className={`px-2 py-1 rounded-lg text-[10px] font-mono flex items-center gap-1.5 transition-all shrink-0 ${
                           currentSpeakingId === m.id
-                            ? 'bg-[#10b981]/20 text-[#10b981] border border-[#10b981]/40 animate-pulse'
-                            : 'text-neutral-400 hover:text-white bg-white/5'
+                            ? 'bg-[#10b981]/25 text-[#10b981] border border-[#10b981]/50 animate-pulse font-bold'
+                            : 'text-neutral-400 hover:text-white bg-white/5 border border-white/10 hover:border-white/20'
                         }`}
-                        title="Live Speech in Hindi / English"
+                        title="मधुर हिंदी आवाज़ में सुनें"
                       >
-                        <Volume2 size={11} />
-                        <span>{currentSpeakingId === m.id ? 'बोल रहे हैं...' : 'सुनें (Listen)'}</span>
+                        <Volume2 size={12} />
+                        <span>{currentSpeakingId === m.id ? 'बोल रही हूँ...' : 'हिंदी में सुनें'}</span>
                       </button>
                     </div>
                   )}
 
-                  {/* Formatted Content */}
-                  <div className="text-xs space-y-1.5 leading-relaxed font-sans whitespace-pre-wrap">
+                  {/* Message Body */}
+                  <div className="text-xs sm:text-[13px] space-y-2 leading-relaxed font-sans whitespace-pre-wrap text-neutral-200">
                     {m.text}
                   </div>
 
-                  {/* Interactive Action Buttons */}
+                  {/* Formatted Key Highlight Cards */}
+                  {m.highlights && m.highlights.length > 0 && (
+                    <div className="space-y-1.5 pt-2 border-t border-white/10">
+                      <span className="text-[10px] font-mono uppercase text-[#ff9a3c] block font-bold">
+                        मुख्य बिंदु (KEY TELEMETRY):
+                      </span>
+                      {m.highlights.map((h, hIdx) => (
+                        <div
+                          key={hIdx}
+                          className="flex items-center gap-2 p-2 rounded-xl bg-black/40 border border-white/8 text-[11px] text-white"
+                        >
+                          <CheckCircle2 size={13} className="text-[#10b981] shrink-0" />
+                          <span>{h}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Interactive Quick Action Buttons */}
                   {m.actions && m.actions.length > 0 && (
-                    <div className="pt-2 border-t border-white/10 flex flex-wrap gap-1.5 font-mono">
+                    <div className="pt-2.5 border-t border-white/10 flex flex-wrap gap-2 font-mono">
                       {m.actions.map((act, aIdx) => (
                         <button
                           key={aIdx}
                           onClick={() => handleActionClick(act)}
-                          className="px-2.5 py-1.5 rounded-md bg-white/10 hover:bg-[#ff9a3c] hover:text-[#130e09] text-[10px] text-neutral-200 transition-all flex items-center gap-1.5 border border-white/15 hover:border-[#ff9a3c] shadow-sm font-medium"
+                          className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-[#ff9a3c] hover:text-[#130e09] text-[11px] text-neutral-200 transition-all flex items-center gap-1.5 border border-white/15 hover:border-[#ff9a3c] shadow-sm font-semibold"
                         >
-                          {act.icon === 'download' && <Download size={11} />}
-                          {act.icon === 'linkedin' && <ExternalLink size={11} />}
-                          {act.icon === 'mail' && <Mail size={11} />}
-                          {act.icon === 'scroll' && <ChevronRight size={11} className="text-[#ff9a3c]" />}
+                          {act.icon === 'download' && <Download size={12} />}
+                          {act.icon === 'linkedin' && <ExternalLink size={12} />}
+                          {act.icon === 'mail' && <Mail size={12} />}
+                          {act.icon === 'phone' && <Phone size={12} />}
+                          {act.icon === 'scroll' && <ChevronRight size={12} className="text-[#ff9a3c]" />}
                           <span>{act.label}</span>
                         </button>
                       ))}
@@ -594,7 +591,7 @@ export const SmartBot: React.FC = () => {
                   )}
 
                   <span
-                    className={`block text-[9px] mt-1 text-right font-mono ${
+                    className={`block text-[9px] mt-1.5 text-right font-mono ${
                       m.sender === 'user' ? 'text-[#130e09]/80 font-bold' : 'text-neutral-500'
                     }`}
                   >
@@ -605,41 +602,58 @@ export const SmartBot: React.FC = () => {
             ))}
 
             {isTyping && (
-              <div className="flex gap-2 items-center text-xs text-neutral-400 italic font-mono pl-8">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#ff9a3c] animate-bounce" />
-                <span className="w-1.5 h-1.5 rounded-full bg-[#ff9a3c] animate-bounce [animation-delay:0.2s]" />
-                <span className="w-1.5 h-1.5 rounded-full bg-[#ff9a3c] animate-bounce [animation-delay:0.4s]" />
-                <span className="text-[11px] ml-1">AI सोच रहा है (Processing)...</span>
+              <div className="flex gap-2 items-center text-xs text-neutral-400 italic font-mono pl-9">
+                <span className="w-2 h-2 rounded-full bg-[#ff9a3c] animate-bounce" />
+                <span className="w-2 h-2 rounded-full bg-[#ff9a3c] animate-bounce [animation-delay:0.2s]" />
+                <span className="w-2 h-2 rounded-full bg-[#ff9a3c] animate-bounce [animation-delay:0.4s]" />
+                <span className="text-[11px] ml-1">सोच रही हूँ (Processing)...</span>
               </div>
             )}
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input Bar */}
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSend();
-            }}
-            className="p-3 bg-[#18110b] border-t border-white/15 flex items-center gap-2"
-          >
-            <input
-              type="text"
-              value={input}
-              maxLength={300}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask anything in English or हिंदी (e.g. Urban Company, projects)..."
-              className="flex-1 bg-white/5 border border-white/15 rounded-lg px-3 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-[#ff9a3c] transition-colors"
-            />
-            <button
-              type="submit"
-              disabled={!input.trim()}
-              className="p-2 rounded-lg bg-[#ff9a3c] text-[#130e09] hover:bg-[#ffb066] disabled:opacity-40 disabled:hover:bg-[#ff9a3c] transition-colors font-bold shadow-md"
-              title="Send message"
+          {/* Gemini Live Listening Wave & Input Bar */}
+          <div className="p-3.5 bg-[#18110b] border-t border-white/15 space-y-2">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                processQuery(input);
+              }}
+              className="flex items-center gap-2"
             >
-              <Send size={14} />
-            </button>
-          </form>
+              <input
+                type="text"
+                value={input}
+                maxLength={300}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="हिंदी या English में पूछें (जैसे: अर्बन कंपनी, प्रोजेक्ट्स)..."
+                className="flex-1 bg-white/6 border border-white/15 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-neutral-400 focus:outline-none focus:border-[#ff9a3c] transition-colors"
+              />
+
+              {/* Live Gemini Microphone Button */}
+              <button
+                type="button"
+                onClick={toggleListening}
+                className={`p-2.5 rounded-xl border transition-all ${
+                  isListening
+                    ? 'bg-red-500 text-white border-red-400 shadow-[0_0_15px_rgba(239,68,68,0.5)] animate-bounce'
+                    : 'bg-white/10 text-[#ff9a3c] border-white/15 hover:bg-white/20'
+                }`}
+                title="बोलकर पूछें (Live Speech Input)"
+              >
+                {isListening ? <MicOff size={16} /> : <Mic size={16} />}
+              </button>
+
+              <button
+                type="submit"
+                disabled={!input.trim()}
+                className="p-2.5 rounded-xl bg-[#ff9a3c] text-[#130e09] hover:bg-[#ffb066] disabled:opacity-40 disabled:hover:bg-[#ff9a3c] transition-colors font-bold shadow-md"
+                title="संदेश भेजें"
+              >
+                <Send size={15} />
+              </button>
+            </form>
+          </div>
         </div>
       )}
 
@@ -649,20 +663,20 @@ export const SmartBot: React.FC = () => {
           soundEngine.playTick();
           setIsOpen((prev) => !prev);
         }}
-        className="group flex items-center gap-2.5 px-4 py-3 rounded-full bg-gradient-to-r from-[#1c130d] to-[#261910] hover:from-[#261910] hover:to-[#332115] border border-white/20 hover:border-[#ff9a3c] text-white shadow-[0_10px_25px_rgba(0,0,0,0.8),0_0_20px_rgba(255,154,60,0.25)] transition-all duration-300 active:scale-95"
+        className="group flex items-center gap-3 px-4 py-3 rounded-full bg-gradient-to-r from-[#1c130d] via-[#261910] to-[#1c130d] hover:from-[#261910] hover:to-[#332115] border border-white/20 hover:border-[#ff9a3c] text-white shadow-[0_12px_30px_rgba(0,0,0,0.85),0_0_25px_rgba(255,154,60,0.3)] transition-all duration-300 active:scale-95"
       >
         <div className="relative">
-          <div className="w-7 h-7 rounded-full bg-[#ff9a3c] text-[#130e09] flex items-center justify-center font-bold text-xs shadow-md group-hover:scale-110 transition-transform">
-            <MessageSquare size={14} />
+          <div className="w-8 h-8 rounded-full bg-[#ff9a3c] text-[#130e09] flex items-center justify-center font-bold text-sm shadow-md group-hover:scale-110 transition-transform">
+            <MessageSquare size={16} />
           </div>
           <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border border-black animate-pulse" />
         </div>
-        <div className="flex flex-col text-left">
-          <span className="text-xs font-bold text-white tracking-wide flex items-center gap-1 font-mono">
-            AI COPILOT
-            <Sparkles size={11} className="text-[#ff9a3c]" />
+        <div className="flex flex-col text-left font-mono">
+          <span className="text-xs font-bold text-white tracking-wide flex items-center gap-1.5">
+            सजल AI कॉपायलट
+            <Sparkles size={12} className="text-[#ff9a3c]" />
           </span>
-          <span className="text-[10px] text-neutral-400 font-sans">Google AI Studio · Live Hindi</span>
+          <span className="text-[10px] text-neutral-300 font-sans">लाइव हिंदी आवाज़ में बात करें</span>
         </div>
       </button>
     </div>
