@@ -3,7 +3,6 @@ import {
   X,
   Send,
   Sparkles,
-  ExternalLink,
   Download,
   Mail,
   ChevronRight,
@@ -16,10 +15,7 @@ import {
   CheckCircle2,
   Copy,
   Radio,
-  SlidersHorizontal,
-  Maximize2,
-  Minimize2,
-  RotateCcw
+  ExternalLink
 } from 'lucide-react';
 import { soundEngine } from '../utils/audio';
 import { getAssetUrl } from '../utils/assets';
@@ -44,7 +40,7 @@ interface Message {
 
 export const SmartBot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'live' | 'cards'>('live'); // 'live' is the Gemini Live Orb mode
+  const [activeTab, setActiveTab] = useState<'live' | 'cards'>('live');
   const [voiceEnabled, setVoiceEnabled] = useState<boolean>(true);
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
   const [currentSpeakingId, setCurrentSpeakingId] = useState<string | null>(null);
@@ -54,14 +50,24 @@ export const SmartBot: React.FC = () => {
   const [liveTranscript, setLiveTranscript] = useState<string>('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [botState, setBotState] = useState<'idle' | 'listening' | 'thinking' | 'speaking'>('idle');
+
+  const botStateRef = useRef<'idle' | 'listening' | 'thinking' | 'speaking'>('idle');
+  botStateRef.current = botState;
+
   const recognitionRef = useRef<any>(null);
+  const voicesRef = useRef<SpeechSynthesisVoice[]>([]);
+  const preferredVoiceRef = useRef<SpeechSynthesisVoice | null>(null);
 
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
 
-  // Canvas ref for fluid audio wave orb
+  // High-performance canvas ref for fluid audio wave orb (60-120fps)
   const orbCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const orbAnimIdRef = useRef<number | null>(null);
+
+  // Interpolated smooth animation values
+  const currentRadiusRef = useRef<number>(54);
+  const currentAmpRef = useRef<number>(8);
 
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -98,13 +104,39 @@ export const SmartBot: React.FC = () => {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Pre-cache SpeechSynthesis Voices on mount for instant audio startup
+  useEffect(() => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+
+    const cacheVoices = () => {
+      const voices = window.speechSynthesis.getVoices();
+      voicesRef.current = voices;
+      const femaleVoice =
+        voices.find(
+          (v) =>
+            (v.lang.includes('hi') || v.lang.includes('IN')) &&
+            (v.name.toLowerCase().includes('female') ||
+              v.name.toLowerCase().includes('kalpana') ||
+              v.name.toLowerCase().includes('swara') ||
+              v.name.toLowerCase().includes('aditi') ||
+              v.name.toLowerCase().includes('zira') ||
+              v.name.toLowerCase().includes('google हिन्दी'))
+        ) || voices.find((v) => v.lang.includes('hi') || v.lang.includes('IN'));
+
+      preferredVoiceRef.current = femaleVoice || null;
+    };
+
+    cacheVoices();
+    window.speechSynthesis.onvoiceschanged = cacheVoices;
+  }, []);
+
   useEffect(() => {
     if (isOpen && activeTab === 'cards') {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, isTyping, isOpen, activeTab]);
 
-  // Female Hindi-Toned Speech Synthesizer
+  // Female Hindi-Toned Speech Synthesizer with zero-lag pre-cached voice
   const speakFemaleHindiTone = useCallback((text: string, messageId: string) => {
     if (!('speechSynthesis' in window)) return;
 
@@ -125,26 +157,12 @@ export const SmartBot: React.FC = () => {
       .trim();
 
     const utterance = new SpeechSynthesisUtterance(cleanSpeech);
-    // Natural female Hindi tone configuration
     utterance.lang = 'hi-IN';
     utterance.pitch = 1.2; // Natural pleasant sweet female voice register
-    utterance.rate = 0.94; // Clear, polite pacing
+    utterance.rate = 0.95; // Clear, polite pacing
 
-    const voices = window.speechSynthesis.getVoices();
-    const femaleVoice =
-      voices.find(
-        (v) =>
-          (v.lang.includes('hi') || v.lang.includes('IN')) &&
-          (v.name.toLowerCase().includes('female') ||
-            v.name.toLowerCase().includes('kalpana') ||
-            v.name.toLowerCase().includes('swara') ||
-            v.name.toLowerCase().includes('aditi') ||
-            v.name.toLowerCase().includes('zira') ||
-            v.name.toLowerCase().includes('google हिन्दी'))
-      ) || voices.find((v) => v.lang.includes('hi') || v.lang.includes('IN'));
-
-    if (femaleVoice) {
-      utterance.voice = femaleVoice;
+    if (preferredVoiceRef.current) {
+      utterance.voice = preferredVoiceRef.current;
     }
 
     utterance.onstart = () => {
@@ -184,22 +202,25 @@ export const SmartBot: React.FC = () => {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  // --- Dynamic Animated Fluid Sound Orb (Gemini Live Style) ---
+  // --- Dynamic High-Performance Animated Sound Orb (Zero-Lag 120 FPS) ---
   useEffect(() => {
     if (!isOpen || activeTab !== 'live') {
-      if (orbAnimIdRef.current) cancelAnimationFrame(orbAnimIdRef.current);
+      if (orbAnimIdRef.current) {
+        cancelAnimationFrame(orbAnimIdRef.current);
+        orbAnimIdRef.current = null;
+      }
       return;
     }
 
     const canvas = orbCanvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
     let time = 0;
 
     const renderOrb = () => {
-      time += 0.035;
+      time += 0.038;
       const w = canvas.width;
       const h = canvas.height;
       const cx = w / 2;
@@ -207,51 +228,58 @@ export const SmartBot: React.FC = () => {
 
       ctx.clearRect(0, 0, w, h);
 
-      // Amplitude based on botState
-      let baseRadius = 55;
-      let waveAmp = 8;
-      let ringCount = 4;
-      let colorPrimary = 'rgba(6, 182, 212, 0.85)'; // cyan
-      let colorSecondary = 'rgba(255, 154, 60, 0.85)'; // amber
-      let colorTertiary = 'rgba(139, 92, 246, 0.75)'; // purple
+      // Determine target states with exponential smoothing (lerp)
+      const state = botStateRef.current;
+      let targetR = 54;
+      let targetA = 7;
+      let colorPrimary = 'rgba(6, 182, 212, 0.85)';
+      let colorSecondary = 'rgba(255, 154, 60, 0.85)';
+      let colorTertiary = 'rgba(139, 92, 246, 0.75)';
 
-      if (botState === 'listening') {
-        baseRadius = 65 + Math.sin(time * 6) * 12;
-        waveAmp = 18;
+      if (state === 'listening') {
+        targetR = 64 + Math.sin(time * 5) * 10;
+        targetA = 16;
         colorPrimary = 'rgba(255, 154, 60, 0.95)';
         colorSecondary = 'rgba(239, 68, 68, 0.85)';
-      } else if (botState === 'thinking') {
-        baseRadius = 58;
-        waveAmp = 6;
+      } else if (state === 'thinking') {
+        targetR = 56;
+        targetA = 6;
         colorPrimary = 'rgba(139, 92, 246, 0.95)';
         colorSecondary = 'rgba(59, 130, 246, 0.9)';
-      } else if (botState === 'speaking') {
-        baseRadius = 60 + Math.sin(time * 8) * 14;
-        waveAmp = 22;
+      } else if (state === 'speaking') {
+        targetR = 58 + Math.sin(time * 7) * 12;
+        targetA = 20;
         colorPrimary = 'rgba(16, 185, 129, 0.95)';
         colorSecondary = 'rgba(6, 182, 212, 0.9)';
       }
 
-      // Outer radial glow
-      const glowGrad = ctx.createRadialGradient(cx, cy, baseRadius * 0.4, cx, cy, baseRadius * 2.2);
+      // Smooth lerp transition (zero snap or lag)
+      currentRadiusRef.current += (targetR - currentRadiusRef.current) * 0.1;
+      currentAmpRef.current += (targetA - currentAmpRef.current) * 0.1;
+
+      const baseRadius = currentRadiusRef.current;
+      const waveAmp = currentAmpRef.current;
+
+      // Soft radial aura (using fast gradients without expensive shadowBlur)
+      const glowGrad = ctx.createRadialGradient(cx, cy, baseRadius * 0.4, cx, cy, baseRadius * 2.1);
       glowGrad.addColorStop(0, colorPrimary);
       glowGrad.addColorStop(0.5, colorSecondary);
       glowGrad.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = glowGrad;
       ctx.beginPath();
-      ctx.arc(cx, cy, baseRadius * 2.2, 0, Math.PI * 2);
+      ctx.arc(cx, cy, baseRadius * 2.1, 0, Math.PI * 2);
       ctx.fill();
 
-      // Fluid Multi-Harmonic Sound Orb Core
-      for (let r = 0; r < ringCount; r++) {
+      // Fluid Multi-Harmonic Sound Orb Core (4 harmonic layers)
+      for (let r = 0; r < 4; r++) {
         ctx.beginPath();
-        const numPoints = 64;
-        const currentR = baseRadius - r * 6;
+        const numPoints = 48; // Optimized vertex count for 120 FPS locked
+        const currentR = baseRadius - r * 5.5;
 
         for (let i = 0; i <= numPoints; i++) {
           const angle = (i / numPoints) * Math.PI * 2;
-          const harmonic1 = Math.sin(angle * 3 + time * 2 + r) * waveAmp;
-          const harmonic2 = Math.cos(angle * 5 - time * 3) * (waveAmp * 0.6);
+          const harmonic1 = Math.sin(angle * 3 + time * 2.2 + r) * waveAmp;
+          const harmonic2 = Math.cos(angle * 5 - time * 2.8) * (waveAmp * 0.55);
           const rad = currentR + harmonic1 + harmonic2;
 
           const px = cx + Math.cos(angle) * rad;
@@ -263,34 +291,36 @@ export const SmartBot: React.FC = () => {
 
         ctx.closePath();
         ctx.strokeStyle = r === 0 ? colorPrimary : r === 1 ? colorSecondary : colorTertiary;
-        ctx.lineWidth = 3 - r * 0.6;
+        ctx.lineWidth = 2.6 - r * 0.5;
         ctx.stroke();
 
         if (r === 0) {
-          const innerGrad = ctx.createRadialGradient(cx - 15, cy - 15, 5, cx, cy, currentR);
+          const innerGrad = ctx.createRadialGradient(cx - 12, cy - 12, 4, cx, cy, currentR);
           innerGrad.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
-          innerGrad.addColorStop(0.4, colorPrimary);
-          innerGrad.addColorStop(0.8, colorSecondary);
-          innerGrad.addColorStop(1, 'rgba(10, 10, 20, 0.9)');
+          innerGrad.addColorStop(0.35, colorPrimary);
+          innerGrad.addColorStop(0.75, colorSecondary);
+          innerGrad.addColorStop(1, 'rgba(18, 13, 9, 0.92)');
           ctx.fillStyle = innerGrad;
           ctx.fill();
         }
       }
 
-      // Orbiting energy particles
-      for (let p = 0; p < 6; p++) {
-        const pAngle = time * (1.2 + p * 0.2) + (p * Math.PI) / 3;
-        const pDist = baseRadius * 1.35 + Math.sin(time * 3 + p) * 12;
+      // Fast, lightweight orbiting spark particles (no shadowBlur lag)
+      for (let p = 0; p < 5; p++) {
+        const pAngle = time * (1.1 + p * 0.18) + (p * Math.PI) / 2.5;
+        const pDist = baseRadius * 1.32 + Math.sin(time * 3 + p) * 10;
         const px = cx + Math.cos(pAngle) * pDist;
         const py = cy + Math.sin(pAngle) * pDist;
 
         ctx.beginPath();
-        ctx.arc(px, py, 2.5, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-        ctx.shadowColor = '#ffffff';
-        ctx.shadowBlur = 8;
+        ctx.arc(px, py, 2.2, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
         ctx.fill();
-        ctx.shadowBlur = 0;
+
+        ctx.beginPath();
+        ctx.arc(px, py, 4.5, 0, Math.PI * 2);
+        ctx.fillStyle = colorPrimary;
+        ctx.fill();
       }
 
       orbAnimIdRef.current = requestAnimationFrame(renderOrb);
@@ -299,9 +329,12 @@ export const SmartBot: React.FC = () => {
     renderOrb();
 
     return () => {
-      if (orbAnimIdRef.current) cancelAnimationFrame(orbAnimIdRef.current);
+      if (orbAnimIdRef.current) {
+        cancelAnimationFrame(orbAnimIdRef.current);
+        orbAnimIdRef.current = null;
+      }
     };
-  }, [isOpen, activeTab, botState]);
+  }, [isOpen, activeTab]);
 
   // Comprehensive Knowledge Engine for Sajal's Portfolio
   const generateDossierResponse = (query: string): Partial<Message> => {
@@ -528,6 +561,9 @@ export const SmartBot: React.FC = () => {
       lq.includes('hire') ||
       lq.includes('interview') ||
       lq.includes('reach') ||
+      lq.includes('location') ||
+      lq.includes('joining') ||
+      lq.includes('notice') ||
       lq.includes('संपर्क') ||
       lq.includes('बात')
     ) {
@@ -644,6 +680,7 @@ export const SmartBot: React.FC = () => {
     };
   };
 
+  // Snappy, instantaneous query processing (sub-120ms)
   const processQuery = useCallback((queryText: string) => {
     if (!queryText.trim()) return;
 
@@ -662,6 +699,7 @@ export const SmartBot: React.FC = () => {
     setInput('');
     setLiveTranscript('');
 
+    // Fast, responsive execution with zero perceptual lag
     setTimeout(() => {
       const respData = generateDossierResponse(queryText);
       const botMsg: Message = {
@@ -684,7 +722,7 @@ export const SmartBot: React.FC = () => {
       } else {
         setBotState('idle');
       }
-    }, 450);
+    }, 120);
   }, [voiceEnabled, speakFemaleHindiTone]);
 
   // Live Speech Recognition Toggle (Gemini Live Microphone)
@@ -740,12 +778,14 @@ export const SmartBot: React.FC = () => {
 
     recognition.onend = () => {
       setIsListening(false);
-      if (botState === 'listening') setBotState('idle');
+      if (botStateRef.current === 'listening') {
+        setBotState('idle');
+      }
     };
 
     recognitionRef.current = recognition;
     recognition.start();
-  }, [isListening, botState, stopSpeaking, processQuery]);
+  }, [isListening, stopSpeaking, processQuery]);
 
   const handleActionClick = (action: ActionButton) => {
     soundEngine.playTick();
@@ -783,20 +823,22 @@ export const SmartBot: React.FC = () => {
   ];
 
   return (
-    <div className="fixed bottom-5 right-5 z-40 font-mono">
+    <div className="fixed bottom-5 right-5 z-40 font-mono select-none">
       {/* Bot Chat & Live Voice Console */}
       {isOpen && (
-        <div className="mb-3 w-[94vw] sm:w-[480px] h-[640px] max-h-[88vh] bg-[#100b08]/96 backdrop-blur-2xl border border-white/20 rounded-3xl shadow-[0_25px_60px_rgba(0,0,0,0.95),0_0_40px_rgba(255,154,60,0.25)] flex flex-col overflow-hidden animate-fadeIn">
-          
+        <div
+          className="mb-3 w-[94vw] sm:w-[480px] h-[640px] max-h-[88vh] bg-[#120d09] border border-white/20 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.92),0_0_35px_rgba(255,154,60,0.2)] flex flex-col overflow-hidden animate-fadeIn transform-gpu"
+          style={{ willChange: 'transform', transform: 'translateZ(0)' }}
+        >
           {/* Header */}
-          <div className="px-5 py-4 bg-gradient-to-r from-[#1c120a] via-[#140d08] to-[#1c120a] border-b border-white/15 flex items-center justify-between shrink-0">
+          <div className="px-5 py-3.5 bg-gradient-to-r from-[#1c120a] via-[#150e09] to-[#1c120a] border-b border-white/15 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-3">
               <div className="relative">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#ff9a3c] to-[#ea580c] text-[#130e09] font-black flex items-center justify-center text-sm shadow-lg">
-                  <Sparkles size={18} className="text-[#130e09]" />
+                <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-[#ff9a3c] to-[#ea580c] text-[#130e09] font-black flex items-center justify-center text-sm shadow-md">
+                  <Sparkles size={17} className="text-[#130e09]" />
                 </div>
                 <span
-                  className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-[#140d08] transition-colors ${
+                  className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-[#150e09] transition-colors ${
                     botState === 'listening'
                       ? 'bg-amber-400 animate-ping'
                       : botState === 'speaking'
@@ -892,13 +934,13 @@ export const SmartBot: React.FC = () => {
             </div>
           </div>
 
-          {/* Quick Prompt Chips */}
+          {/* Quick Prompt Chips with smooth horizontal scroll */}
           <div className="px-4 py-2 bg-[#160f0a] border-b border-white/10 flex items-center gap-2 overflow-x-auto scrollbar-none shrink-0">
             {quickPills.map((pill, idx) => (
               <button
                 key={idx}
                 onClick={() => processQuery(pill.query)}
-                className="px-2.5 py-1 rounded-lg bg-white/6 hover:bg-[#ff9a3c]/20 hover:border-[#ff9a3c]/50 text-[10px] font-mono text-neutral-300 hover:text-white border border-white/10 whitespace-nowrap transition-all shrink-0"
+                className="px-2.5 py-1 rounded-lg bg-white/6 hover:bg-[#ff9a3c]/20 hover:border-[#ff9a3c]/50 text-[10px] font-mono text-neutral-300 hover:text-white border border-white/10 whitespace-nowrap transition-colors shrink-0"
               >
                 {pill.label}
               </button>
@@ -932,7 +974,7 @@ export const SmartBot: React.FC = () => {
                 </div>
               </div>
 
-              {/* Fluid Sound Wave Orb Canvas Centerpiece */}
+              {/* Fluid Sound Wave Orb Canvas Centerpiece (Zero-Lag Optimized) */}
               <div
                 className="relative my-auto flex items-center justify-center cursor-pointer group"
                 onClick={() => {
@@ -946,31 +988,50 @@ export const SmartBot: React.FC = () => {
               >
                 <canvas
                   ref={orbCanvasRef}
-                  width={280}
-                  height={280}
-                  className="rounded-full transition-transform duration-300 group-hover:scale-105"
+                  width={240}
+                  height={240}
+                  className="rounded-full transition-transform duration-200 group-hover:scale-105"
+                  style={{ willChange: 'transform', transform: 'translateZ(0)' }}
                 />
 
-                {/* Center Mic Icon Indicator inside Orb */}
+                {/* Center Mic / Speaker Icon Indicator inside Orb */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   {isListening ? (
-                    <div className="w-16 h-16 rounded-full bg-black/40 backdrop-blur-md border border-amber-400/60 flex items-center justify-center text-amber-300 animate-pulse">
-                      <Mic size={26} />
+                    <div className="w-14 h-14 rounded-full bg-black/50 border border-amber-400/70 flex items-center justify-center text-amber-300 animate-pulse shadow-lg">
+                      <Mic size={24} />
                     </div>
                   ) : isSpeaking ? (
-                    <div className="w-16 h-16 rounded-full bg-black/40 backdrop-blur-md border border-emerald-400/60 flex items-center justify-center text-emerald-300 animate-bounce">
-                      <Volume2 size={26} />
+                    <div className="w-14 h-14 rounded-full bg-black/50 border border-emerald-400/70 flex items-center justify-center text-emerald-300 animate-pulse shadow-lg">
+                      <Volume2 size={24} />
                     </div>
                   ) : (
-                    <div className="w-14 h-14 rounded-full bg-black/30 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white/80 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Mic size={22} />
+                    <div className="w-12 h-12 rounded-full bg-black/40 border border-white/20 flex items-center justify-center text-white/80 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Mic size={20} />
                     </div>
                   )}
                 </div>
               </div>
 
+              {/* Dynamic Sound Wave Equalizer Bars */}
+              {(isListening || isSpeaking) && (
+                <div className="flex items-center gap-1.5 h-6 z-10">
+                  {[0.4, 0.8, 1.2, 0.6, 1.0, 0.5, 0.9, 0.3].map((delay, idx) => (
+                    <span
+                      key={idx}
+                      className={`w-1 rounded-full transition-all ${
+                        isListening ? 'bg-amber-400 animate-pulse' : 'bg-emerald-400 animate-bounce'
+                      }`}
+                      style={{
+                        height: `${10 + (idx % 4) * 4}px`,
+                        animationDelay: `${delay * 0.15}s`
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+
               {/* Real-Time Live Transcript Stream */}
-              <div className="w-full max-w-sm text-center min-h-[54px] flex items-center justify-center z-10 px-3">
+              <div className="w-full max-w-sm text-center min-h-[48px] flex items-center justify-center z-10 px-3">
                 {liveTranscript ? (
                   <p className="text-xs sm:text-sm text-neutral-200 font-sans leading-relaxed animate-pulse">
                     &ldquo;{liveTranscript}&rdquo;
@@ -987,25 +1048,25 @@ export const SmartBot: React.FC = () => {
               </div>
 
               {/* Bottom Quick Voice Controls */}
-              <div className="w-full flex items-center justify-center gap-4 pt-2 z-10">
+              <div className="w-full flex items-center justify-center gap-4 pt-1 z-10">
                 <button
                   onClick={toggleListening}
-                  className={`w-14 h-14 rounded-full flex items-center justify-center shadow-xl transition-all ${
+                  className={`w-13 h-13 rounded-full flex items-center justify-center shadow-lg transition-transform active:scale-95 ${
                     isListening
-                      ? 'bg-amber-400 text-black shadow-[0_0_25px_rgba(251,191,36,0.6)] scale-110'
-                      : 'bg-gradient-to-r from-[#ff9a3c] to-[#ea580c] text-black hover:scale-105 shadow-[0_0_20px_rgba(255,154,60,0.4)]'
+                      ? 'bg-amber-400 text-black shadow-[0_0_20px_rgba(251,191,36,0.6)] scale-105'
+                      : 'bg-gradient-to-r from-[#ff9a3c] to-[#ea580c] text-black hover:scale-105 shadow-[0_0_15px_rgba(255,154,60,0.35)]'
                   }`}
                   title={isListening ? 'Stop listening' : 'Start voice conversation'}
                 >
-                  {isListening ? <MicOff size={24} /> : <Mic size={24} />}
+                  {isListening ? <MicOff size={22} /> : <Mic size={22} />}
                 </button>
 
                 {isSpeaking && (
                   <button
                     onClick={stopSpeaking}
-                    className="px-4 py-2 rounded-full bg-red-500/20 border border-red-500/50 text-red-300 text-xs font-mono font-bold flex items-center gap-1.5 hover:bg-red-500/30 transition-all"
+                    className="px-3.5 py-1.5 rounded-full bg-red-500/20 border border-red-500/50 text-red-300 text-xs font-mono font-bold flex items-center gap-1.5 hover:bg-red-500/30 transition-colors"
                   >
-                    <VolumeX size={14} />
+                    <VolumeX size={13} />
                     <span>Interrupt</span>
                   </button>
                 )}
@@ -1022,11 +1083,11 @@ export const SmartBot: React.FC = () => {
                   className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}
                 >
                   {msg.sender === 'user' ? (
-                    <div className="max-w-[85%] bg-gradient-to-r from-[#ff9a3c] to-[#ea580c] text-[#120e0a] px-4 py-3 rounded-2xl rounded-tr-xs text-xs font-mono font-bold shadow-lg">
+                    <div className="max-w-[85%] bg-gradient-to-r from-[#ff9a3c] to-[#ea580c] text-[#120e0a] px-4 py-2.5 rounded-2xl rounded-tr-xs text-xs font-mono font-bold shadow-md">
                       {msg.text}
                     </div>
                   ) : (
-                    <div className="max-w-[95%] bg-[#1a120c] border border-white/15 rounded-2xl rounded-tl-xs p-4 sm:p-5 shadow-2xl space-y-3">
+                    <div className="max-w-[95%] bg-[#18110b] border border-white/15 rounded-2xl rounded-tl-xs p-4 sm:p-5 shadow-xl space-y-3">
                       {msg.badge && (
                         <div className="flex items-center justify-between border-b border-white/10 pb-2">
                           <span className="text-[10px] font-mono font-bold text-[#ff9a3c] uppercase tracking-wider">
@@ -1088,7 +1149,7 @@ export const SmartBot: React.FC = () => {
                             <button
                               key={aIdx}
                               onClick={() => handleActionClick(act)}
-                              className="px-3 py-1.5 rounded-xl bg-white/8 hover:bg-[#ff9a3c] hover:text-[#120e0a] border border-white/15 text-[11px] font-mono text-neutral-200 transition-all flex items-center gap-1.5 shadow-sm"
+                              className="px-3 py-1.5 rounded-xl bg-white/8 hover:bg-[#ff9a3c] hover:text-[#120e0a] border border-white/15 text-[11px] font-mono text-neutral-200 transition-colors flex items-center gap-1.5 shadow-sm"
                             >
                               {act.icon === 'download' && <Download size={12} />}
                               {act.icon === 'mail' && <Mail size={12} />}
@@ -1183,7 +1244,7 @@ export const SmartBot: React.FC = () => {
               <button
                 type="submit"
                 disabled={!input.trim()}
-                className="p-2.5 rounded-2xl bg-[#ff9a3c] hover:bg-[#ea580c] disabled:opacity-40 disabled:hover:bg-[#ff9a3c] text-[#120e0a] font-black transition-all shadow-md"
+                className="p-2.5 rounded-2xl bg-[#ff9a3c] hover:bg-[#ea580c] disabled:opacity-40 disabled:hover:bg-[#ff9a3c] text-[#120e0a] font-black transition-colors shadow-md"
                 title="Send query"
               >
                 <Send size={16} />
@@ -1193,7 +1254,7 @@ export const SmartBot: React.FC = () => {
         </div>
       )}
 
-      {/* Floating Launcher Pill */}
+      {/* Floating Launcher Pill (Hardware Accelerated, Zero Lag) */}
       {!isOpen && (
         <button
           onClick={() => {
@@ -1204,13 +1265,14 @@ export const SmartBot: React.FC = () => {
             }
             setIsOpen(true);
           }}
-          className="group relative flex items-center gap-3 px-5 py-3.5 rounded-3xl bg-gradient-to-r from-[#1c120a]/95 via-[#140d08]/95 to-[#1c120a]/95 backdrop-blur-2xl border border-white/20 hover:border-[#ff9a3c]/60 shadow-[0_15px_35px_rgba(0,0,0,0.8),0_0_25px_rgba(255,154,60,0.3)] transition-all hover:scale-105 active:scale-95"
+          className="group relative flex items-center gap-3 px-5 py-3.5 rounded-3xl bg-[#140e09] border border-white/20 hover:border-[#ff9a3c]/60 shadow-[0_15px_35px_rgba(0,0,0,0.85),0_0_25px_rgba(255,154,60,0.25)] transition-transform duration-200 hover:scale-105 active:scale-95 transform-gpu"
+          style={{ willChange: 'transform', transform: 'translateZ(0)' }}
         >
           <div className="relative">
             <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-[#ff9a3c] to-[#ea580c] flex items-center justify-center text-[#120e0a] font-black shadow-md">
               <Sparkles size={17} className="text-[#120e0a]" />
             </div>
-            <span className="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#140d08] animate-pulse" />
+            <span className="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#140e09] animate-pulse" />
           </div>
 
           <div className="text-left">
