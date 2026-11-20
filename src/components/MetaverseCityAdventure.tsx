@@ -199,7 +199,11 @@ export const MetaverseCityAdventure: React.FC = () => {
   // Smooth camera glide to district
   const goToDistrict = (district: CityDistrict, userInteracted = true) => {
     if (userInteracted) {
-      soundEngine.playWhoosh();
+      if (typeof soundEngine.playWhoosh === 'function') {
+        soundEngine.playWhoosh();
+      } else {
+        soundEngine.playResonance();
+      }
       setIsTourPlaying(false);
     }
     setActiveDistrict(district);

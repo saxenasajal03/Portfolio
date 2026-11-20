@@ -68,7 +68,7 @@ export const SmartBot: React.FC = () => {
       id: 'init-msg',
       sender: 'bot',
       title: "Sajal's Personal Dossier",
-      badge: 'Portfolio Intelligence Console',
+      badge: 'Central SBC Quality · Urban Company',
       text:
         "नमस्ते! I am **Sajal's Assistant**.\n\n" +
         "Sajal Saxena is a **Full-Stack Software Engineer** and **Business Development Associate** in Urban Company's Central SBC Quality team in New Delhi. He specializes in enterprise React/Node architecture, operational root-cause analysis (RCA), and SLA compliance.\n\n" +
@@ -592,7 +592,7 @@ export const SmartBot: React.FC = () => {
     if (isHindi) {
       return {
         title: 'सजल सक्सेना — संक्षेप विवरण',
-        badge: 'Portfolio Intelligence Console',
+        badge: 'Central SBC Quality · Urban Company',
         text:
           'सजल सक्सेना एक **Full-Stack Software Engineer** और **Business Development Associate** हैं (अर्बन कंपनी, नई दिल्ली):\n\n' +
           '• **अर्बन कंपनी**: 80%+ रियल-टाइम अटेंडेंस, Tier 1/2 एस्केलेशंस का समाधान, जार्विस SQL एनालिटिक्स।\n' +
@@ -619,7 +619,7 @@ export const SmartBot: React.FC = () => {
 
     return {
       title: 'Sajal Saxena — Executive Dossier Summary',
-      badge: 'Portfolio Intelligence Console',
+      badge: 'Central SBC Quality · Urban Company',
       text:
         'Sajal Saxena is a **Full-Stack Software Engineer** and **Business Development Associate** at Urban Company in New Delhi:\n\n' +
         '• **Operational Rigor**: Central SBC Quality team, maintaining >80% Real-Time partner attendance SLA and leading Tier 1/2 escalation Root-Cause Analysis (RCA).\n' +
@@ -818,7 +818,7 @@ export const SmartBot: React.FC = () => {
                       ? 'Speaking...'
                       : botState === 'thinking'
                       ? 'Processing query...'
-                      : 'Voice & Intelligence Ready'}
+                      : 'Online'}
                   </span>
                 </p>
               </div>
@@ -1197,7 +1197,11 @@ export const SmartBot: React.FC = () => {
       {!isOpen && (
         <button
           onClick={() => {
-            soundEngine.playWhoosh();
+            if (typeof soundEngine.playWhoosh === 'function') {
+              soundEngine.playWhoosh();
+            } else {
+              soundEngine.playResonance();
+            }
             setIsOpen(true);
           }}
           className="group relative flex items-center gap-3 px-5 py-3.5 rounded-3xl bg-gradient-to-r from-[#1c120a]/95 via-[#140d08]/95 to-[#1c120a]/95 backdrop-blur-2xl border border-white/20 hover:border-[#ff9a3c]/60 shadow-[0_15px_35px_rgba(0,0,0,0.8),0_0_25px_rgba(255,154,60,0.3)] transition-all hover:scale-105 active:scale-95"
@@ -1215,7 +1219,7 @@ export const SmartBot: React.FC = () => {
               <span className="w-1.5 h-1.5 rounded-full bg-[#ff9a3c]" />
             </div>
             <div className="text-[10px] text-neutral-400 font-sans">
-              Voice & Portfolio Intelligence
+              Online
             </div>
           </div>
         </button>
